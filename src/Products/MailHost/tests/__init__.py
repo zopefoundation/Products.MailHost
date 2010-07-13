@@ -11,5 +11,3 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
-# This file is needed to make this a package.

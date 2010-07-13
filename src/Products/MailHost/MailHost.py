@@ -11,8 +11,6 @@
 #
 ##############################################################################
 """SMTP mail objects
-
-$Id$
 """
 import logging
 from os.path import realpath

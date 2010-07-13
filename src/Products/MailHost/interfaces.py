@@ -10,9 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""MailHost z3 interfaces.
-
-$Id$
+"""MailHost interfaces.
 """
 
 from zope.interface import Interface

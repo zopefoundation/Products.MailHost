@@ -10,9 +10,6 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''MailHost Product Initialization
-$Id$'''
-__version__='$Revision: 1.22 $'[11:-2]
 
 import MailHost
 import SendMailTag

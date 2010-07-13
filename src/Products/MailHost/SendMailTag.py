@@ -10,12 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__rcs_id__='$Id$'
-__version__='$Revision: 1.18 $'[11:-2]
 
 from MailHost import MailBase, MailHostError
 from DocumentTemplate.DT_Util import parse_params,render_blocks
 from DocumentTemplate.DT_String import String
+
 
 class SendMailTag:
     '''the send mail tag, used like thus:
@@ -102,21 +101,17 @@ class SendMailTag:
         else: self.encode=None
 
     def render(self, md):
-        args=self.args
-        has_key=args.has_key
-
         if self.mailhost:
-            mhost=md[self.mailhost]
+            mhost = md[self.mailhost]
         elif self.smtphost:
-            mhost=MailBase( smtp_host=self.smtphost, smtp_port=self.port )
+            mhost = MailBase(smtp_host=self.smtphost, smtp_port=self.port)
 
         mhost.send(render_blocks(self.section.blocks, md),
                    self.mailto, self.mailfrom,
-                   self.subject, self.encode
-                   )
+                   self.subject, self.encode)
 
         return ' '
 
-    __call__=render
+    __call__ = render
 
-String.commands['sendmail']=SendMailTag
+String.commands['sendmail'] = SendMailTag
