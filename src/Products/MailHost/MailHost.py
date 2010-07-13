@@ -65,10 +65,13 @@ parseaddr = emailutils.parseaddr
 getaddresses = emailutils.getaddresses
 CHARSET_RE = re.compile('charset=[\'"]?([\w-]+)[\'"]?', re.IGNORECASE)
 
+
 class MailHostError(Exception):
     pass
 
 manage_addMailHostForm = DTMLFile('dtml/addMailHost_form', globals())
+
+
 def manage_addMailHost(self,
                        id,
                        title='',
@@ -80,8 +83,8 @@ def manage_addMailHost(self,
                       ):
     """ Add a MailHost into the system.
     """
-    i = MailHost( id, title, smtp_host, smtp_port )   #create new mail host
-    self._setObject( id,i )   #register it
+    i = MailHost(id, title, smtp_host, smtp_port)
+    self._setObject(id, i)
 
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
@@ -106,25 +109,22 @@ class MailBase(Implicit, Item, RoleManager):
     force_tls = False
     lock = Lock()
 
-    # timeout = 1.0 # unused?
-
     manage_options = (
         (
-        {'icon':'', 'label':'Edit',
-         'action':'manage_main',
-         'help':('MailHost','Mail-Host_Edit.stx')},
+        {'icon': '', 'label': 'Edit',
+         'action': 'manage_main',
+         'help': ('MailHost', 'Mail-Host_Edit.stx')},
         )
         + RoleManager.manage_options
         + Item.manage_options
         )
 
-
     def __init__(self,
                  id='',
                  title='',
                  smtp_host='localhost',
-                 smtp_port=25, 
-                 force_tls=False, 
+                 smtp_port=25,
+                 force_tls=False,
                  smtp_uid='',
                  smtp_pwd='',
                  smtp_queue=False,
@@ -134,7 +134,7 @@ class MailBase(Implicit, Item, RoleManager):
         """
         self.id = id
         self.title = title
-        self.smtp_host = str( smtp_host )
+        self.smtp_host = str(smtp_host)
         self.smtp_port = int(smtp_port)
         self.smtp_uid = smtp_uid
         self.smtp_pwd = smtp_pwd
@@ -154,10 +154,10 @@ class MailBase(Implicit, Item, RoleManager):
                            smtp_host,
                            smtp_port,
                            smtp_uid='',
-                           smtp_pwd='', 
+                           smtp_pwd='',
                            smtp_queue=False,
                            smtp_queue_directory='/tmp',
-                           force_tls=False, 
+                           force_tls=False,
                            REQUEST=None,
                           ):
         """Make the changes.
@@ -175,20 +175,17 @@ class MailBase(Implicit, Item, RoleManager):
         self.smtp_queue = smtp_queue
         self.smtp_queue_directory = smtp_queue_directory
 
-        # restart queue processor thread 
+        # restart queue processor thread
         if self.smtp_queue:
-            self._stopQueueProcessorThread() 
-            self._startQueueProcessorThread() 
+            self._stopQueueProcessorThread()
+            self._startQueueProcessorThread()
         else:
-            self._stopQueueProcessorThread() 
+            self._stopQueueProcessorThread()
 
 
         if REQUEST is not None:
             msg = 'MailHost %s updated' % self.id
-            return self.manage_main( self
-                                   , REQUEST
-                                   , manage_tabs_message=msg
-                                   )
+            return self.manage_main(self, REQUEST, manage_tabs_message=msg)
 
     security.declareProtected(use_mailhost_services, 'sendTemplate')
     def sendTemplate(trueself,
@@ -258,8 +255,7 @@ class MailBase(Implicit, Item, RoleManager):
                           port=int(self.smtp_port),
                           username=self.smtp_uid or None,
                           password=self.smtp_pwd or None,
-                          force_tls=self.force_tls
-                         )
+                          force_tls=self.force_tls)
 
     security.declarePrivate('_getThreadKey')
     def _getThreadKey(self):
@@ -272,7 +268,7 @@ class MailBase(Implicit, Item, RoleManager):
         """ Stop thread for processing the mail queue.
         """
         key = self._getThreadKey()
-        if queue_threads.has_key(key):
+        if key in queue_threads:
             thread = queue_threads[key]
             thread.stop()
             while thread.isAlive():
@@ -286,12 +282,12 @@ class MailBase(Implicit, Item, RoleManager):
         """ Start thread for processing the mail queue.
         """
         key = self._getThreadKey()
-        if not queue_threads.has_key(key):
+        if key not in queue_threads:
             thread = QueueProcessorThread()
             thread.setMailer(self._makeMailer())
             thread.setQueuePath(self.smtp_queue_directory)
             thread.start()
-            queue_threads[key] = thread     
+            queue_threads[key] = thread
             LOG.info('Thread for %s started' % key)
 
     security.declareProtected(view, 'queueLength')
@@ -315,7 +311,8 @@ class MailBase(Implicit, Item, RoleManager):
             return th.isAlive()
         return False
 
-    security.declareProtected(change_configuration, 'manage_restartQueueThread')
+    security.declareProtected(change_configuration,
+                              'manage_restartQueueThread')
     def manage_restartQueueThread(self, action='start', REQUEST=None):
         """ Restart the queue processor thread """
 
@@ -354,6 +351,7 @@ InitializeClass(MailBase)
 class MailHost(Persistent, MailBase):
     """persistent version"""
 
+
 def uu_encoder(msg):
     """For BBB only, don't send uuencoded emails"""
     orig = StringIO(msg.get_payload())
@@ -368,10 +366,11 @@ ENCODERS = {
     '7bit': Encoders.encode_7or8bit,
     '8bit': Encoders.encode_7or8bit,
     'x-uuencode': uu_encoder,
-    'uuencode':  uu_encoder,
+    'uuencode': uu_encoder,
     'x-uue': uu_encoder,
     'uue': uu_encoder,
     }
+
 
 def _encode(body, encode=None):
     """Manually sets an encoding and encodes the message if not
@@ -384,14 +383,15 @@ def _encode(body, encode=None):
         # already encoded correctly, may have been automated
         return body
     if mo['Content-Transfer-Encoding'] not in ['7bit', None]:
-        raise MailHostError, 'Message already encoded'
+        raise MailHostError('Message already encoded')
     if encode in ENCODERS:
         ENCODERS[encode](mo)
         if not mo['Content-Transfer-Encoding']:
-            mo['Content-Transfer-Encoding'] =  encode
+            mo['Content-Transfer-Encoding'] = encode
         if not mo['Mime-Version']:
-            mo['Mime-Version'] =  '1.0'
+            mo['Mime-Version'] = '1.0'
     return mo.as_string()
+
 
 def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
                   charset=None, msg_type=None):
@@ -426,8 +426,8 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
             # encoding for the charset
             mo.set_charset(charset)
         elif charset_match and not charset:
-            # If a charset parameter was provided use it for header encoding below,
-            # Otherwise, try to use the charset provided in the message.
+            # If a charset parameter was provided use it for header encoding
+            # below, otherwise, try to use the charset provided in the message.
             charset = charset_match.groups()[0]
     else:
         # Do basically the same for each payload as for the complete
@@ -458,7 +458,7 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
 
     if mto:
         if isinstance(mto, basestring):
-            mto = [formataddr(addr) for addr in getaddresses((mto,))]
+            mto = [formataddr(addr) for addr in getaddresses((mto, ))]
         if not mo.get('To'):
             mo['To'] = ', '.join(str(_encode_address_string(e, charset))
                                  for e in mto)
@@ -468,9 +468,9 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
         for header in ('To', 'Cc', 'Bcc'):
             v = ','.join(mo.get_all(header) or [])
             if v:
-                mto += [formataddr(addr) for addr in getaddresses((v,))]
+                mto += [formataddr(addr) for addr in getaddresses((v, ))]
         if not mto:
-            raise MailHostError, "No message recipients designated"
+            raise MailHostError("No message recipients designated")
 
     if mfrom:
         # XXX: do we really want to override an explicitly set From
@@ -479,7 +479,7 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
         mo['From'] = _encode_address_string(mfrom, charset)
     else:
         if mo.get('From') is None:
-            raise MailHostError,"Message missing SMTP Header 'From'"
+            raise MailHostError("Message missing SMTP Header 'From'")
         mfrom = mo['From']
 
     if mo.get('Bcc'):
@@ -490,6 +490,7 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
 
     return mo.as_string(), mto, mfrom
 
+
 def _try_encode(text, charset):
     """Attempt to encode using the default charset if none is
     provided.  Should we permit encoding errors?"""
@@ -497,6 +498,7 @@ def _try_encode(text, charset):
         return text.encode(charset)
     else:
         return text.encode()
+
 
 def _encode_address_string(text, charset):
     """Split the email into parts and use header encoding on the name

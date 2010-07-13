@@ -11,9 +11,11 @@
 #
 ##############################################################################
 
-from MailHost import MailBase, MailHostError
-from DocumentTemplate.DT_Util import parse_params,render_blocks
+from DocumentTemplate.DT_Util import parse_params
+from DocumentTemplate.DT_Util import render_blocks
 from DocumentTemplate.DT_String import String
+
+from Products.MailHost.MailHost import MailBase, MailHostError
 
 
 class SendMailTag:
@@ -63,20 +65,25 @@ class SendMailTag:
                           encode=None)
 
         smtphost=None
-        
+
         has_key=args.has_key
-        if has_key('mailhost'): mailhost=args['mailhost']
-        elif has_key('smtphost'): mailhost=smtphost=args['smtphost']
-        elif has_key(''): mailhost=args['mailhost']=args['']
-        else: raise MailHostError, 'No mailhost was specified in tag'
+        if has_key('mailhost'):
+            mailhost = args['mailhost']
+        elif has_key('smtphost'):
+            mailhost = smtphost = args['smtphost']
+        elif has_key(''):
+            mailhost = args['mailhost'] = args['']
+        else:
+            raise MailHostError('No mailhost was specified in tag')
 
         for key in ('mailto', 'mailfrom', 'subject', 'port'):
-            if not args.has_key(key):args[key]=''
+            if not key in args:
+                args[key] = ''
 
         if has_key('encode') and args['encode'] not in \
         ('base64', 'quoted-printable', 'uuencode', 'x-uuencode',
          'uue', 'x-uue'):
-            raise MailHostError, (
+            raise MailHostError(
                 'An unsupported encoding was specified in tag')
 
         if not smtphost:
@@ -98,7 +105,8 @@ class SendMailTag:
             self.port=args['port']
         if has_key('encode'):
             self.encode=args['encode']
-        else: self.encode=None
+        else:
+            self.encode=None
 
     def render(self, md):
         if self.mailhost:

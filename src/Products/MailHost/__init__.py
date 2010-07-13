@@ -14,6 +14,7 @@
 import MailHost
 import SendMailTag
 
+
 def initialize(context):
     context.registerClass(
         MailHost.MailHost,
