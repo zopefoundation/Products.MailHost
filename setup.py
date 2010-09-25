@@ -15,7 +15,7 @@
 from setuptools import setup, find_packages
 
 setup(name='Products.MailHost',
-      version = '2.13.1',
+      version = '2.13.2dev',
       url='http://pypi.python.org/pypi/Products.MailHost',
       license='ZPL 2.1',
       description="zope.sendmail integration for Zope 2.",
