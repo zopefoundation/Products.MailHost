@@ -4,6 +4,7 @@ Changelog
 2.13.2 (unreleased)
 -------------------
 
+- Specify detailed distribution dependencies.
 
 2.13.1 (2010-09-25)
 -------------------
