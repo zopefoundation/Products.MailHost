@@ -580,7 +580,10 @@ Content-Transfer-Encoding: quoted-printable
         # effects in the case of multipart mails.
         # (TypeError: expected string or buffer)
         mailhost.send(msg, charset='utf-8')
-        self.assertEqual(mailhost.sent, msg)
+        # There is a one newline difference in the output between
+        # zope.sendmail versions.
+        self.assertEqual(mailhost.sent[:677], msg[:677])
+        self.assertTrue(mailhost.sent.endswith('==0490954888==--\n'))
 
     def testSendMultiPartMixedMessage(self):
         msg = ("""\

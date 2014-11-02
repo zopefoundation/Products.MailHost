@@ -1,8 +1,10 @@
 Changelog
 =========
 
-2.13.2 (unreleased)
+2.13.2 (2014-11-02)
 -------------------
+
+- Adjust tests to pass with latest zope.sendmail versions.
 
 - Specify detailed distribution dependencies.
 
