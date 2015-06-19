@@ -33,7 +33,7 @@ setup(
         'Acquisition',
         'DateTime',
         'DocumentTemplate',
-        'ExtensionClass>=4.1a1',
+        'ExtensionClass < 4.0dev',
         'Persistence',
         'Zope2 >= 2.13.0a1',
         'zope.deferredimport',
