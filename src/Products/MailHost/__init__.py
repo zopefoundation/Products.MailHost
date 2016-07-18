@@ -12,7 +12,7 @@
 ##############################################################################
 
 import MailHost
-import SendMailTag
+import SendMailTag  # NOQA
 
 
 def initialize(context):
@@ -23,6 +23,3 @@ def initialize(context):
                       MailHost.manage_addMailHost),
         icon='www/MailHost_icon.gif',
     )
-
-    context.registerHelp()
-    context.registerHelpTitle('Zope Help')

@@ -112,8 +112,7 @@ class MailBase(Implicit, Item, RoleManager):
     manage_options = (
         (
         {'icon': '', 'label': 'Edit',
-         'action': 'manage_main',
-         'help': ('MailHost', 'Mail-Host_Edit.stx')},
+         'action': 'manage_main'},
         )
         + RoleManager.manage_options
         + Item.manage_options
