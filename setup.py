@@ -16,17 +16,28 @@ from setuptools import setup, find_packages
 
 setup(
     name='Products.MailHost',
-    version='2.14.dev0',
+    version='3.0.dev0',
     url='http://pypi.python.org/pypi/Products.MailHost',
     license='ZPL 2.1',
     description="zope.sendmail integration for Zope 2.",
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',
-    long_description=open('README.txt').read() + '\n' +
-                     open('CHANGES.txt').read(),
+    long_description=(open('README.rst').read() + '\n' +
+                      open('CHANGES.rst').read()),
     packages=find_packages('src'),
     namespace_packages=['Products'],
     package_dir={'': 'src'},
+    classifiers=[
+        "Development Status :: 6 - Mature",
+        "Environment :: Web Environment",
+        "Framework :: Zope2",
+        "License :: OSI Approved :: Zope Public License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2 :: Only",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: Implementation :: CPython",
+    ],
     install_requires=[
         'setuptools',
         'AccessControl',
