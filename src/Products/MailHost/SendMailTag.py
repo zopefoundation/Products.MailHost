@@ -18,7 +18,7 @@ from DocumentTemplate.DT_String import String
 from Products.MailHost.MailHost import MailBase, MailHostError
 
 
-class SendMailTag:
+class SendMailTag(object):
     '''the send mail tag, used like thus:
 
     <dtml-sendmail mailhost="someMailHostID">
@@ -54,59 +54,58 @@ class SendMailTag:
 
     '''
 
-    name='sendmail'
-    blockContinuations=()
-    encode=None
+    name = 'sendmail'
+    blockContinuations = ()
+    encode = None
 
     def __init__(self, blocks):
-        tname, args, section=blocks[0]
-        args=parse_params(args, mailhost=None, mailto=None, mailfrom=None,
-                          subject=None, smtphost=None, port='25',
-                          encode=None)
+        tname, args, section = blocks[0]
+        args = parse_params(args, mailhost=None, mailto=None, mailfrom=None,
+                            subject=None, smtphost=None, port='25',
+                            encode=None)
 
-        smtphost=None
+        smtphost = None
 
-        has_key=args.has_key
-        if has_key('mailhost'):
+        if 'mailhost' in args:
             mailhost = args['mailhost']
-        elif has_key('smtphost'):
+        elif 'smtphost' in args:
             mailhost = smtphost = args['smtphost']
-        elif has_key(''):
+        elif '' in args:
             mailhost = args['mailhost'] = args['']
         else:
             raise MailHostError('No mailhost was specified in tag')
 
         for key in ('mailto', 'mailfrom', 'subject', 'port'):
-            if not key in args:
+            if key not in args:
                 args[key] = ''
 
-        if has_key('encode') and args['encode'] not in \
-        ('base64', 'quoted-printable', 'uuencode', 'x-uuencode',
-         'uue', 'x-uue'):
+        if 'encode' in args and args['encode'] not in \
+            ('base64', 'quoted-printable', 'uuencode', 'x-uuencode',
+             'uue', 'x-uue'):
             raise MailHostError(
                 'An unsupported encoding was specified in tag')
 
         if not smtphost:
-            self.__name__=self.mailhost=mailhost
-            self.smtphost=None
+            self.__name__ = self.mailhost = mailhost
+            self.smtphost = None
         else:
-            self.__name__=self.smtphost=smtphost
-            self.mailhost=None
-        self.section=section
-        self.args=args
-        self.mailto=args['mailto']
-        self.mailfrom=args['mailfrom']
-        self.subject=None or args['subject']
-        if args['port'] and type(args['port']) is type('s'):
-            self.port=args['port']=int(args['port'])
-        elif args['port']=='':
-            self.port=args['port']=25
+            self.__name__ = self.smtphost = smtphost
+            self.mailhost = None
+        self.section = section
+        self.args = args
+        self.mailto = args['mailto']
+        self.mailfrom = args['mailfrom']
+        self.subject = None or args['subject']
+        if args['port'] and isinstance(args['port'], str):
+            self.port = args['port'] = int(args['port'])
+        elif args['port'] == '':
+            self.port = args['port'] = 25
         else:
-            self.port=args['port']
-        if has_key('encode'):
-            self.encode=args['encode']
+            self.port = args['port']
+        if 'encode' in args:
+            self.encode = args['encode']
         else:
-            self.encode=None
+            self.encode = None
 
     def render(self, md):
         if self.mailhost:

@@ -10,29 +10,29 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""SMTP mail objects
-"""
-import logging
-from os.path import realpath
-import re
-from cStringIO import StringIO
+
 from copy import deepcopy
+from cStringIO import StringIO
 from email.Header import Header
+import email.Charset
 from email.Charset import Charset
 from email import message_from_string
 from email.Message import Message
 from email import Encoders
-try:
-    import email.utils as emailutils
-except ImportError:
-    import email.Utils as emailutils
-import email.Charset
+import logging
+from os.path import realpath
+import re
+import sys
+from threading import Lock
+import time
 # We import from a private module here because the email module
 # doesn't provide a good public address list parser
 import uu
 
-from threading import Lock
-import time
+try:
+    import email.utils as emailutils
+except ImportError:
+    import email.Utils as emailutils
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -48,11 +48,18 @@ from OFS.SimpleItem import Item
 from zope.interface import implements
 from zope.sendmail.mailer import SMTPMailer
 from zope.sendmail.maildir import Maildir
-from zope.sendmail.delivery import DirectMailDelivery, QueuedMailDelivery, \
-                            QueueProcessorThread
+from zope.sendmail.delivery import (
+    DirectMailDelivery,
+    QueuedMailDelivery,
+    QueueProcessorThread,
+)
 
-from interfaces import IMailHost
-from decorator import synchronized
+from Products.MailHost.interfaces import IMailHost
+from Products.MailHost.decorator import synchronized
+
+if sys.version_info > (3, 0):
+    basestring = str
+    unicode = str
 
 queue_threads = {}  # maps MailHost path -> queue processor threada
 
@@ -79,15 +86,14 @@ def manage_addMailHost(self,
                        localhost='localhost',
                        smtp_port=25,
                        timeout=1.0,
-                       REQUEST=None,
-                      ):
+                       REQUEST=None):
     """ Add a MailHost into the system.
     """
     i = MailHost(id, title, smtp_host, smtp_port)
     self._setObject(id, i)
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST['RESPONSE'].redirect(self.absolute_url() + '/manage_main')
 
 add = manage_addMailHost
 
@@ -102,21 +108,16 @@ class MailBase(Implicit, Item, RoleManager):
     manage_main._setName('manage_main')
     index_html = None
     security = ClassSecurityInfo()
-    smtp_uid = '' # Class attributes for smooth upgrades
+    smtp_uid = ''  # Class attributes for smooth upgrades
     smtp_pwd = ''
     smtp_queue = False
     smtp_queue_directory = '/tmp'
     force_tls = False
     lock = Lock()
 
-    manage_options = (
-        (
-        {'icon': '', 'label': 'Edit',
-         'action': 'manage_main'},
-        )
-        + RoleManager.manage_options
-        + Item.manage_options
-        )
+    manage_options = ((
+        {'icon': '', 'label': 'Edit', 'action': 'manage_main'},
+    ) + RoleManager.manage_options + Item.manage_options)
 
     def __init__(self,
                  id='',
@@ -127,8 +128,7 @@ class MailBase(Implicit, Item, RoleManager):
                  smtp_uid='',
                  smtp_pwd='',
                  smtp_queue=False,
-                 smtp_queue_directory='/tmp',
-                ):
+                 smtp_queue_directory='/tmp'):
         """Initialize a new MailHost instance.
         """
         self.id = id
@@ -141,9 +141,8 @@ class MailBase(Implicit, Item, RoleManager):
         self.smtp_queue = smtp_queue
         self.smtp_queue_directory = smtp_queue_directory
 
-
-    # staying for now... (backwards compatibility)
     def _init(self, smtp_host, smtp_port):
+        # staying for now... (backwards compatibility)
         self.smtp_host = smtp_host
         self.smtp_port = smtp_port
 
@@ -157,8 +156,7 @@ class MailBase(Implicit, Item, RoleManager):
                            smtp_queue=False,
                            smtp_queue_directory='/tmp',
                            force_tls=False,
-                           REQUEST=None,
-                          ):
+                           REQUEST=None):
         """Make the changes.
         """
         title = str(title)
@@ -181,7 +179,6 @@ class MailBase(Implicit, Item, RoleManager):
         else:
             self._stopQueueProcessorThread()
 
-
         if REQUEST is not None:
             msg = 'MailHost %s updated' % self.id
             return self.manage_main(self, REQUEST, manage_tabs_message=msg)
@@ -197,8 +194,7 @@ class MailBase(Implicit, Item, RoleManager):
                      REQUEST=None,
                      immediate=False,
                      charset=None,
-                     msg_type=None,
-                    ):
+                     msg_type=None):
         """Render a mail template, then send it...
         """
         mtemplate = getattr(self, messageTemplate)
@@ -224,8 +220,7 @@ class MailBase(Implicit, Item, RoleManager):
              encode=None,
              immediate=False,
              charset=None,
-             msg_type=None,
-            ):
+             msg_type=None):
         messageText, mto, mfrom = _mungeHeaders(messageText, mto, mfrom,
                                                 subject, charset, msg_type)
         # This encode step is mainly for BBB, encoding should be
@@ -246,7 +241,6 @@ class MailBase(Implicit, Item, RoleManager):
             mfrom, mto, subject, body)
 
         self._send(mfrom, mto, body, immediate)
-
 
     def _makeMailer(self):
         """ Create a SMTPMailer """
@@ -300,7 +294,6 @@ class MailBase(Implicit, Item, RoleManager):
             return 'n/a - %s is not a maildir - please verify your ' \
                    'configuration' % self.smtp_queue_directory
 
-
     security.declareProtected(view, 'queueThreadAlive')
     def queueThreadAlive(self):
         """ return True/False is queue thread is working
@@ -326,7 +319,6 @@ class MailBase(Implicit, Item, RoleManager):
             msg = 'Queue processor thread %s' % \
                   (action == 'stop' and 'stopped' or 'started')
             return self.manage_main(self, REQUEST, manage_tabs_message=msg)
-
 
     security.declarePrivate('_send')
     def _send(self, mfrom, mto, messageText, immediate=False):
@@ -368,7 +360,7 @@ ENCODERS = {
     'uuencode': uu_encoder,
     'x-uue': uu_encoder,
     'uue': uu_encoder,
-    }
+}
 
 
 def _encode(body, encode=None):
