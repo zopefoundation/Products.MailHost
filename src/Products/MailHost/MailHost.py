@@ -45,7 +45,7 @@ from Persistence import Persistent
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 
-from zope.interface import implements
+from zope.interface import implementer
 from zope.sendmail.mailer import SMTPMailer
 from zope.sendmail.maildir import Maildir
 from zope.sendmail.delivery import (
@@ -98,10 +98,9 @@ def manage_addMailHost(self,
 add = manage_addMailHost
 
 
+@implementer(IMailHost)
 class MailBase(Implicit, Item, RoleManager):
     """a mailhost...?"""
-
-    implements(IMailHost)
 
     meta_type = 'Mail Host'
     manage = manage_main = DTMLFile('dtml/manageMailHost', globals())

@@ -4,6 +4,7 @@ Changelog
 3.0.1 (unreleased)
 ------------------
 
+- Use `@implementer` class decorator.
 
 3.0 (2016-07-18)
 ----------------
