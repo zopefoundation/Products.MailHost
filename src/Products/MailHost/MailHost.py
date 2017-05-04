@@ -12,13 +12,13 @@
 ##############################################################################
 
 from copy import deepcopy
-from cStringIO import StringIO
-from email.Header import Header
-import email.Charset
-from email.Charset import Charset
+from email.header import Header
+import email.charset
+from email.charset import Charset
 from email import message_from_string
-from email.Message import Message
-from email import Encoders
+from email.message import Message
+from email import encoders
+from io import BytesIO
 import logging
 from os.path import realpath
 import re
@@ -66,7 +66,7 @@ queue_threads = {}  # maps MailHost path -> queue processor threada
 LOG = logging.getLogger('MailHost')
 
 # Encode utf-8 emails as Quoted Printable by default
-email.Charset.add_charset("utf-8", email.Charset.QP, email.Charset.QP, "utf-8")
+email.charset.add_charset("utf-8", email.charset.QP, email.charset.QP, "utf-8")
 formataddr = emailutils.formataddr
 parseaddr = emailutils.parseaddr
 getaddresses = emailutils.getaddresses
@@ -344,17 +344,17 @@ class MailHost(Persistent, MailBase):
 
 def uu_encoder(msg):
     """For BBB only, don't send uuencoded emails"""
-    orig = StringIO(msg.get_payload())
-    encdata = StringIO()
+    orig = BytesIO(msg.get_payload())
+    encdata = BytesIO()
     uu.encode(orig, encdata)
     msg.set_payload(encdata.getvalue())
 
 # All encodings supported by mimetools for BBB
 ENCODERS = {
-    'base64': Encoders.encode_base64,
-    'quoted-printable': Encoders.encode_quopri,
-    '7bit': Encoders.encode_7or8bit,
-    '8bit': Encoders.encode_7or8bit,
+    'base64': encoders.encode_base64,
+    'quoted-printable': encoders.encode_quopri,
+    '7bit': encoders.encode_7or8bit,
+    '8bit': encoders.encode_7or8bit,
     'x-uuencode': uu_encoder,
     'uuencode': uu_encoder,
     'x-uue': uu_encoder,

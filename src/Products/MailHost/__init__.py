@@ -11,8 +11,8 @@
 #
 ##############################################################################
 
-import MailHost
-import SendMailTag  # NOQA
+from Products.MailHost import MailHost
+from Products.MailHost import SendMailTag  # NOQA
 
 
 def initialize(context):
