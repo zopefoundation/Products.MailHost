@@ -46,7 +46,7 @@ setup(
         'DocumentTemplate',
         'ExtensionClass>=4.1a1',
         'Persistence',
-        'Zope2 >= 4.0a1',
+        'Zope2 >= 4.0a5',
         'zope.deferredimport',
         'zope.interface',
         'zope.sendmail',
