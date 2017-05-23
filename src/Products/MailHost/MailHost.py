@@ -12,27 +12,27 @@
 ##############################################################################
 
 from copy import deepcopy
-from email.header import Header
+from email import encoders
+from email import message_from_string
 import email.charset
 from email.charset import Charset
-from email import message_from_string
+from email.header import Header
 from email.message import Message
-from email import encoders
+from email.utils import formataddr
+from email.utils import getaddresses
+from email.utils import parseaddr
+import email.utils as emailutils
 from io import BytesIO
 import logging
 from os.path import realpath
 import re
+import six
 import sys
 from threading import Lock
 import time
 # We import from a private module here because the email module
 # doesn't provide a good public address list parser
 import uu
-
-try:
-    import email.utils as emailutils
-except ImportError:
-    import email.Utils as emailutils
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -67,9 +67,6 @@ LOG = logging.getLogger('MailHost')
 
 # Encode utf-8 emails as Quoted Printable by default
 email.charset.add_charset("utf-8", email.charset.QP, email.charset.QP, "utf-8")
-formataddr = emailutils.formataddr
-parseaddr = emailutils.parseaddr
-getaddresses = emailutils.getaddresses
 CHARSET_RE = re.compile('charset=[\'"]?([\w-]+)[\'"]?', re.IGNORECASE)
 
 
