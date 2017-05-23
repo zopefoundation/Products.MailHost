@@ -49,8 +49,8 @@ class SendMailTag(object):
     * subject -- optional subject.  If not specified, there **must** be a
     subject: header in the message.
 
-    * encode -- optional encoding. Possible values are: 'base64',
-     'quoted-printable' and 'uuencode'.
+    * encode -- optional encoding. Possible values are: 'base64' and
+     'quoted-printable'.
 
     '''
 
@@ -79,11 +79,12 @@ class SendMailTag(object):
             if key not in args:
                 args[key] = ''
 
-        if 'encode' in args and args['encode'] not in \
-            ('base64', 'quoted-printable', 'uuencode', 'x-uuencode',
-             'uue', 'x-uue'):
-            raise MailHostError(
-                'An unsupported encoding was specified in tag')
+        if 'encode' in args:
+            encoding = args['encode']
+            if encoding not in ('base64', 'quoted-printable'):
+                raise MailHostError(
+                    'An unsupported encoding, "%s" was specified in tag'
+                    % encoding)
 
         if not smtphost:
             self.__name__ = self.mailhost = mailhost

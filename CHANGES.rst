@@ -6,6 +6,8 @@ Changelog
 
 - Use `@implementer` class decorator.
 
+- Drop long-deprecated support for uuencoded emails.
+
 3.0 (2016-07-18)
 ----------------
 

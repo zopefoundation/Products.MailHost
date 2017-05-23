@@ -475,28 +475,6 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
         self.failUnlessEqual(msg['Subject'],
                              '=?utf-8?q?=C2=BFEsferificaci=C3=B3n=3F?=')
 
-    def testExplicitUUEncoding(self):
-        # We can request a payload encoding explicitly, though this
-        # should probably be considered deprecated functionality.
-        mailhost = self._makeOne('MailHost')
-        # uuencoding
-        mailhost.send('Date: Sun, 27 Aug 2006 17:00:00 +0200\n\nA Message',
-                      mfrom='sender@domain.com',
-                      mto='Foo Bar <foo@domain.com>', encode='uue')
-        self.failUnlessEqual(mailhost.sent, """\
-Date: Sun, 27 Aug 2006 17:00:00 +0200
-Subject: [No Subject]
-To: Foo Bar <foo@domain.com>
-From: sender@domain.com
-Content-Transfer-Encoding: uue
-Mime-Version: 1.0
-
-begin 666 -
-)02!-97-S86=E
- 
-end
-""")  # NOQA
-
     def testExplicitBase64Encoding(self):
         mailhost = self._makeOne('MailHost')
         mailhost.send('Date: Sun, 27 Aug 2006 17:00:00 +0200\n\nA Message',
