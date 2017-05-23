@@ -21,18 +21,12 @@ from email.message import Message
 from email.utils import formataddr
 from email.utils import getaddresses
 from email.utils import parseaddr
-import email.utils as emailutils
-from io import BytesIO
 import logging
 from os.path import realpath
 import re
-import six
 import sys
 from threading import Lock
 import time
-# We import from a private module here because the email module
-# doesn't provide a good public address list parser
-import uu
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.SecurityInfo import ClassSecurityInfo
@@ -338,24 +332,12 @@ InitializeClass(MailBase)
 class MailHost(Persistent, MailBase):
     """persistent version"""
 
-
-def uu_encoder(msg):
-    """For BBB only, don't send uuencoded emails"""
-    orig = BytesIO(msg.get_payload())
-    encdata = BytesIO()
-    uu.encode(orig, encdata)
-    msg.set_payload(encdata.getvalue())
-
 # All encodings supported by mimetools for BBB
 ENCODERS = {
     'base64': encoders.encode_base64,
     'quoted-printable': encoders.encode_quopri,
     '7bit': encoders.encode_7or8bit,
     '8bit': encoders.encode_7or8bit,
-    'x-uuencode': uu_encoder,
-    'uuencode': uu_encoder,
-    'x-uue': uu_encoder,
-    'uue': uu_encoder,
 }
 
 
