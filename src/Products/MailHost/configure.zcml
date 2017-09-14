@@ -3,7 +3,7 @@
     xmlns:zcml="http://namespaces.zope.org/zcml">
 
   <include
-      zcml:condition="installed Products.GenericSetup"
+      zcml:condition="have moved_mailhost"
       file="exportimport.zcml"
       />
 
