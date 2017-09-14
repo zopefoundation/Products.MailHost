@@ -1,0 +1,6 @@
+[run]
+branch = True
+source = Products.MailHost
+
+[report]
+precision = 2

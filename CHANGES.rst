@@ -7,6 +7,10 @@ Changelog
 - Move GenericSetup export/import support from the GenericSetup package
   to MailHost as a setuptools extra.
 
+- Python 3 compatibility
+
+- add test coverage reporting
+
 - Use `@implementer` class decorator.
 
 - Drop long-deprecated support for uuencoded emails.

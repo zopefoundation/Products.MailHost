@@ -24,7 +24,7 @@ from email.utils import parseaddr
 import logging
 from os.path import realpath
 import re
-import sys
+import six
 from threading import Lock
 import time
 
@@ -51,9 +51,6 @@ from zope.sendmail.delivery import (
 from Products.MailHost.interfaces import IMailHost
 from Products.MailHost.decorator import synchronized
 
-if sys.version_info > (3, 0):
-    basestring = str
-    unicode = str
 
 queue_threads = {}  # maps MailHost path -> queue processor threada
 
@@ -66,6 +63,7 @@ CHARSET_RE = re.compile('charset=[\'"]?([\w-]+)[\'"]?', re.IGNORECASE)
 
 class MailHostError(Exception):
     pass
+
 
 manage_addMailHostForm = DTMLFile('dtml/addMailHost_form', globals())
 
@@ -85,6 +83,7 @@ def manage_addMailHost(self,
 
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url() + '/manage_main')
+
 
 add = manage_addMailHost
 
@@ -326,11 +325,13 @@ class MailBase(Implicit, Item, RoleManager):
 
             delivery.send(mfrom, mto, messageText)
 
+
 InitializeClass(MailBase)
 
 
 class MailHost(Persistent, MailBase):
     """persistent version"""
+
 
 # All encodings supported by mimetools for BBB
 ENCODERS = {
@@ -362,19 +363,26 @@ def _encode(body, encode=None):
     return mo.as_string()
 
 
+def _string_transform(text, charset=None):
+    if six.PY2 and isinstance(text, six.text_type):
+        # Unicode under Python 2
+        return _try_encode(text, charset)
+
+    if six.PY3 and isinstance(text, bytes):
+        # Already-encoded byte strings which the email module does not like
+        return text.decode(charset)
+
+    return text
+
+
 def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
                   charset=None, msg_type=None):
     """Sets missing message headers, and deletes Bcc.
        returns fixed message, fixed mto and fixed mfrom"""
-    # If we have been given unicode fields, attempt to encode them
-    if isinstance(messageText, unicode):
-        messageText = _try_encode(messageText, charset)
-    if isinstance(mto, unicode):
-        mto = _try_encode(mto, charset)
-    if isinstance(mfrom, unicode):
-        mfrom = _try_encode(mfrom, charset)
-    if isinstance(subject, unicode):
-        subject = _try_encode(subject, charset)
+    messageText = _string_transform(messageText, charset)
+    mto = _string_transform(mto, charset)
+    mfrom = _string_transform(mfrom, charset)
+    subject = _string_transform(subject, charset)
 
     if isinstance(messageText, Message):
         # We already have a message, make a copy to operate on
@@ -403,7 +411,7 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
         mo['Subject'] = '[No Subject]'
 
     if mto:
-        if isinstance(mto, basestring):
+        if isinstance(mto, six.string_types):
             mto = [formataddr(addr) for addr in getaddresses((mto, ))]
         if not mo.get('To'):
             mo['To'] = ', '.join(str(_encode_address_string(e, charset))
@@ -488,12 +496,13 @@ def _encode_address_string(text, charset):
     parts should be encoded appropriately."""
     header = Header()
     name, addr = parseaddr(text)
-    try:
-        name.decode('us-ascii')
-    except UnicodeDecodeError:
-        if charset:
-            charset = Charset(charset)
-            name = charset.header_encode(name)
+    if isinstance(name, six.binary_type):
+        try:
+            name.decode('us-ascii')
+        except UnicodeDecodeError:
+            if charset:
+                charset = Charset(charset)
+                name = charset.header_encode(name)
     # We again replace rather than raise an error or pass an 8bit string
     header.append(formataddr((name, addr)), errors='replace')
     return header
