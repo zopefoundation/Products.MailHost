@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.0 (unreleased)
+4.0 (2017-09-14)
 ----------------
 
 - Move GenericSetup export/import support from the GenericSetup package
