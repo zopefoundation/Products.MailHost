@@ -4,6 +4,10 @@ Changelog
 4.0 (unreleased)
 ----------------
 
+- Python 3 compatibility
+
+- add test coverage reporting
+
 - Use `@implementer` class decorator.
 
 - Drop long-deprecated support for uuencoded emails.

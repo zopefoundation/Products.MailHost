@@ -14,14 +14,11 @@
 """
 
 from email import message_from_string
-import sys
+import six
 import unittest
 
 from Products.MailHost.MailHost import MailHost
 from Products.MailHost.MailHost import MailHostError, _mungeHeaders
-
-if sys.version_info > (3, 0):
-    unicode = str
 
 
 class DummyMailHost(MailHost):
@@ -273,7 +270,7 @@ This is the message body."""
         # there is a default transfer encoding for the charset, then
         # the content will be encoded and the transfer encoding header
         # will be set.
-        msg = "Here's some encoded t\xc3\xa9xt."
+        msg = b"Here's some encoded t\xc3\xa9xt."
         mailhost = self._makeOne('MailHost')
         mailhost.send(messageText=msg,
                       mto='"Name, Nick" <recipient@domain.com>, '
@@ -297,9 +294,9 @@ This is the message body."""
     def testEncodedHeaders(self):
         # Headers are encoded automatically, email headers are encoded
         # piece-wise to ensure the adresses remain ASCII
-        mfrom = "Jos\xc3\xa9 Andr\xc3\xa9s <jose@example.com>"
-        mto = "Ferran Adri\xc3\xa0 <ferran@example.com>"
-        subject = "\xc2\xbfEsferificaci\xc3\xb3n?"
+        mfrom = b"Jos\xc3\xa9 Andr\xc3\xa9s <jose@example.com>"
+        mto = b"Ferran Adri\xc3\xa0 <ferran@example.com>"
+        subject = b"\xc2\xbfEsferificaci\xc3\xb3n?"
         mailhost = self._makeOne('MailHost')
         mailhost.send(messageText='A message.', mto=mto, mfrom=mfrom,
                       subject=subject, charset='utf-8')
@@ -377,6 +374,7 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
             out['From'],
             '=?utf-8?q?Jos=C3=A9_Andr=C3=A9s?= <jose@example.com>')
 
+    @unittest.skipIf(six.PY3, 'Test not applicable on Python 3.')
     def testUnicodeMessage(self):
         # unicode messages and headers are decoded using the given charset
         msg = unicode("Here's some unencoded <strong>t\xc3\xa9xt</strong>.",
@@ -402,6 +400,7 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
             out.get_payload(),
             "Here's some unencoded <strong>t=C3=A9xt</strong>.")
 
+    @unittest.skipIf(six.PY3, 'Test not applicable on Python 3.')
     def testUnicodeNoEncodingErrors(self):
         # Unicode messages and headers raise errors if no charset is passed to
         # send
@@ -480,7 +479,9 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
         mailhost.send('Date: Sun, 27 Aug 2006 17:00:00 +0200\n\nA Message',
                       mfrom='sender@domain.com',
                       mto='Foo Bar <foo@domain.com>', encode='base64')
-        self.failUnlessEqual(mailhost.sent, """\
+        # Explicitly stripping the output here since the base64 encoder
+        # in Python 3 adds a line break at the end.
+        self.failUnlessEqual(mailhost.sent.strip(), """\
 Date: Sun, 27 Aug 2006 17:00:00 +0200
 Subject: [No Subject]
 To: Foo Bar <foo@domain.com>
