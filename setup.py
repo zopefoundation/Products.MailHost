@@ -51,6 +51,9 @@ setup(
         'zope.interface',
         'zope.sendmail',
     ],
+    extras_require={
+        'genericsetup': ['Products.GenericSetup'],
+    },
     include_package_data=True,
     zip_safe=False,
 )
