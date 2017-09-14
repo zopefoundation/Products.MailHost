@@ -122,4 +122,5 @@ class SendMailTag(object):
 
     __call__ = render
 
+
 String.commands['sendmail'] = SendMailTag

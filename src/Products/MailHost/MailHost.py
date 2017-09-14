@@ -64,6 +64,7 @@ CHARSET_RE = re.compile('charset=[\'"]?([\w-]+)[\'"]?', re.IGNORECASE)
 class MailHostError(Exception):
     pass
 
+
 manage_addMailHostForm = DTMLFile('dtml/addMailHost_form', globals())
 
 
@@ -82,6 +83,7 @@ def manage_addMailHost(self,
 
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url() + '/manage_main')
+
 
 add = manage_addMailHost
 
@@ -323,11 +325,13 @@ class MailBase(Implicit, Item, RoleManager):
 
             delivery.send(mfrom, mto, messageText)
 
+
 InitializeClass(MailBase)
 
 
 class MailHost(Persistent, MailBase):
     """persistent version"""
+
 
 # All encodings supported by mimetools for BBB
 ENCODERS = {
@@ -358,6 +362,7 @@ def _encode(body, encode=None):
             mo['Mime-Version'] = '1.0'
     return mo.as_string()
 
+
 def _string_transform(text, charset=None):
     if six.PY2 and isinstance(text, six.text_type):
         # Unicode under Python 2
@@ -368,6 +373,7 @@ def _string_transform(text, charset=None):
         return text.decode(charset)
 
     return text
+
 
 def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
                   charset=None, msg_type=None):
