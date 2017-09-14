@@ -10,3 +10,6 @@ develop-eggs/
 eggs/
 *.egg-info/
 .tox/
+.coverage
+htmlcov/
+coverage.xml
