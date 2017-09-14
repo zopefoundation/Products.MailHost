@@ -4,6 +4,9 @@ Changelog
 4.0 (unreleased)
 ----------------
 
+- Move GenericSetup export/import support from the GenericSetup package
+  to MailHost as a setuptools extra.
+
 - Python 3 compatibility
 
 - add test coverage reporting
