@@ -15,6 +15,8 @@
 
 import unittest
 
+import zope.component
+
 try:
     from Products.GenericSetup.testing import BodyAdapterTestCase
     from Products.GenericSetup.testing import ExportImportZCMLLayer
@@ -39,14 +41,13 @@ _MAILHOST_BODY_v2 = """\
 """
 
 
-unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
+@unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
 class MailHostXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 
     def _getTargetClass(self):
-        from Products.GenericSetup.MailHost.exportimport \
-                import MailHostXMLAdapter
+        from Products.MailHost.exportimport import MailHostXMLAdapter
 
         return MailHostXMLAdapter
 
@@ -69,9 +70,14 @@ class MailHostXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
         self._obj = MailHost('foo_mailhost')
         self._BODY = _MAILHOST_BODY
+        zope.component.provideAdapter(self._getTargetClass())
+
+    def tearDown(self):
+        gsm = zope.component.getGlobalSiteManager()
+        self.assertTrue(gsm.unregisterAdapter(self._getTargetClass()))
 
 
-unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
+@unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
 class MailHostXMLAdapterTestsWithoutQueue(MailHostXMLAdapterTests):
 
     def _verifyImport(self, obj):
@@ -85,16 +91,16 @@ class MailHostXMLAdapterTestsWithoutQueue(MailHostXMLAdapterTests):
         del mh.smtp_queue
         del mh.smtp_queue_directory
         self._BODY = _MAILHOST_BODY
+        zope.component.provideAdapter(self._getTargetClass())
 
 
-unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
+@unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
 class MailHostXMLAdapterTestsWithQueue(BodyAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
 
     def _getTargetClass(self):
-        from Products.GenericSetup.MailHost.exportimport \
-                import MailHostXMLAdapter
+        from Products.MailHost.exportimport import MailHostXMLAdapter
 
         return MailHostXMLAdapter
 
@@ -113,9 +119,11 @@ class MailHostXMLAdapterTestsWithQueue(BodyAdapterTestCase, unittest.TestCase):
 
         self._obj = MailHost('foo_mailhost')
         self._BODY = _MAILHOST_BODY_v2
+        zope.component.provideAdapter(self._getTargetClass())
 
 
-unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
+
+@unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
 class MailHostXMLAdapterTestsWithNoneValue(MailHostXMLAdapterTests):
 
     def _verifyImport(self, obj):
@@ -134,6 +142,7 @@ class MailHostXMLAdapterTestsWithNoneValue(MailHostXMLAdapterTests):
         self._obj = MailHost('foo_mailhost')
         self._obj.smtp_uid = None
         self._BODY = _MAILHOST_BODY
+        zope.component.provideAdapter(self._getTargetClass())
 
 
 def test_suite():
