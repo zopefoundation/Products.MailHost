@@ -10,7 +10,8 @@ install:
     - python bootstrap.py
     - bin/buildout
 script:
-    - bin/test -v1
+    - bin/test -vc1
+    - bin/test_with_gs -vc1
 notifications:
     email: false
 cache:
