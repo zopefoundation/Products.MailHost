@@ -4,6 +4,7 @@ Changelog
 4.1 (unreleased)
 ----------------
 
+- Add icon for Bootstrap ZMI.
 
 4.0 (2017-09-14)
 ----------------
