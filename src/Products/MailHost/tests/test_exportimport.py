@@ -68,8 +68,8 @@ unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
 class MailHostXMLAdapterTestsWithoutQueue(MailHostXMLAdapterTests):
 
     def _verifyImport(self, obj):
-        self.failIf('smtp_queue' in obj.__dict__)
-        self.failIf('smtp_queue_directory' in obj.__dict__)
+        self.assertFalse('smtp_queue' in obj.__dict__)
+        self.assertFalse('smtp_queue_directory' in obj.__dict__)
 
     def setUp(self):
         from Products.MailHost.MailHost import MailHost
