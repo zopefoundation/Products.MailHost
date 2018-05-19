@@ -13,6 +13,8 @@
 """MailHost export / import support.
 """
 
+import six
+
 from zope.component import adapts
 
 from Products.GenericSetup.interfaces import ISetupEnviron
@@ -65,8 +67,15 @@ class MailHostXMLAdapter(XMLAdapterBase):
         """
         self.context.smtp_host = str(node.getAttribute('smtp_host'))
         self.context.smtp_port = int(node.getAttribute('smtp_port'))
-        self.context.smtp_uid = node.getAttribute('smtp_uid').encode('utf-8')
-        self.context.smtp_pwd = node.getAttribute('smtp_pwd').encode('utf-8')
+        smtp_uid = node.getAttribute('smtp_uid')
+        smtp_pwd = node.getAttribute('smtp_pwd')
+        if six.PY2:
+            # XXX Why?
+            self.context.smtp_uid = smtp_uid.encode('utf-8')
+            self.context.smtp_pwd = smtp_pwd.encode('utf-8')
+        else:
+            self.context.smtp_uid = smtp_uid
+            self.context.smtp_pwd = smtp_pwd
 
         # Older MH instances won't have 'smtp_queue' in instance dict
         if 'smtp_queue' in self.context.__dict__:
