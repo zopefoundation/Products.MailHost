@@ -19,10 +19,10 @@ try:
     from Products.GenericSetup.testing import BodyAdapterTestCase
     from Products.GenericSetup.testing import ExportImportZCMLLayer
     HAVE_GS = True
-except:
+except ImportError:
     HAVE_GS = False
-    class BodyAdapterTestCase: pass
-    class ExportImportZCMLLayer: pass
+    class BodyAdapterTestCase: pass  # noqa
+    class ExportImportZCMLLayer: pass  # noqa
 
 _MAILHOST_BODY = b"""\
 <?xml version="1.0" encoding="utf-8"?>
@@ -39,7 +39,7 @@ _MAILHOST_BODY_v2 = b"""\
 """
 
 
-unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
+@unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
 class MailHostXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
@@ -64,7 +64,7 @@ class MailHostXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
         self._BODY = _MAILHOST_BODY
 
 
-unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
+@unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
 class MailHostXMLAdapterTestsWithoutQueue(MailHostXMLAdapterTests):
 
     def _verifyImport(self, obj):
@@ -80,7 +80,7 @@ class MailHostXMLAdapterTestsWithoutQueue(MailHostXMLAdapterTests):
         self._BODY = _MAILHOST_BODY
 
 
-unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
+@unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
 class MailHostXMLAdapterTestsWithQueue(BodyAdapterTestCase, unittest.TestCase):
 
     layer = ExportImportZCMLLayer
@@ -105,7 +105,7 @@ class MailHostXMLAdapterTestsWithQueue(BodyAdapterTestCase, unittest.TestCase):
         self._BODY = _MAILHOST_BODY_v2
 
 
-unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
+@unittest.skipUnless(HAVE_GS, 'Products.GenericSetup not available.')
 class MailHostXMLAdapterTestsWithNoneValue(MailHostXMLAdapterTests):
 
     def _verifyImport(self, obj):
@@ -127,5 +127,4 @@ def test_suite():
         unittest.makeSuite(MailHostXMLAdapterTests),
         unittest.makeSuite(MailHostXMLAdapterTestsWithoutQueue),
         unittest.makeSuite(MailHostXMLAdapterTestsWithQueue),
-        unittest.makeSuite(MailHostXMLAdapterTestsWithNoneValue),
-        ))
+        unittest.makeSuite(MailHostXMLAdapterTestsWithNoneValue)))

@@ -197,7 +197,7 @@ class MailBase(Implicit, Item, RoleManager):
         try:
             stemplate = getattr(self, statusTemplate)
             return stemplate(self, trueself.REQUEST)
-        except:
+        except Exception:
             return "SEND OK"
 
     security.declareProtected(use_mailhost_services, 'send')

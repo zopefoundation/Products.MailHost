@@ -91,19 +91,19 @@ This is the message body."""
 This is the message body."""
         # Doesn't specify to
         self.assertRaises(MailHostError, _mungeHeaders, msg,
-                              mfrom='sender@domain.com')
+                          mfrom='sender@domain.com')
         # Doesn't specify from
         self.assertRaises(MailHostError, _mungeHeaders, msg,
-                              mto='recipient@domain.com')
+                          mto='recipient@domain.com')
 
     def testNoHeaders(self):
         msg = """This is the message body."""
         # Doesn't specify to
         self.assertRaises(MailHostError, _mungeHeaders, msg,
-                              mfrom='sender@domain.com')
+                          mfrom='sender@domain.com')
         # Doesn't specify from
         self.assertRaises(MailHostError, _mungeHeaders, msg,
-                              mto='recipient@domain.com')
+                          mto='recipient@domain.com')
         # Specify all
         resmsg, resto, resfrom = _mungeHeaders(
             msg, 'recipient2@domain.com',
@@ -285,11 +285,11 @@ This is the message body."""
         self.assertEqual(out['From'], 'sender@domain.com')
         # utf-8 will default to Quoted Printable encoding
         self.assertEqual(out['Content-Transfer-Encoding'],
-                             'quoted-printable')
+                         'quoted-printable')
         self.assertEqual(out['Content-Type'],
-                             'text/plain; charset="utf-8"')
+                         'text/plain; charset="utf-8"')
         self.assertEqual(out.get_payload(),
-                             "Here's some encoded t=C3=A9xt.")
+                         "Here's some encoded t=C3=A9xt.")
 
     def testEncodedHeaders(self):
         # Headers are encoded automatically, email headers are encoded
@@ -312,9 +312,9 @@ This is the message body."""
             '=?utf-8?q?=C2=BFEsferificaci=C3=B3n=3F?=')
         # utf-8 will default to Quoted Printable encoding
         self.assertEqual(out['Content-Transfer-Encoding'],
-                             'quoted-printable')
+                         'quoted-printable')
         self.assertEqual(out['Content-Type'],
-                             'text/plain; charset="utf-8"')
+                         'text/plain; charset="utf-8"')
         self.assertEqual(out.get_payload(), "A message.")
 
     def testAlreadyEncodedMessage(self):
@@ -368,7 +368,7 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
         self.assertEqual(out['Content-Transfer-Encoding'], 'base64')
         # Headers set by parameter will be set using charset parameter
         self.assertEqual(out['Subject'],
-                             '=?iso-8859-1?q?=BFEsferificaci=F3n=3F?=')
+                         '=?iso-8859-1?q?=BFEsferificaci=F3n=3F?=')
         # original headers will be unaltered
         self.assertEqual(
             out['From'],
@@ -394,7 +394,7 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
             '=?utf-8?q?Ferran_Adri=C3=A0?= <ferran@example.com>')
         self.assertEqual(out['Subject'], '=?utf-8?q?=C2=A1Andr=C3=A9s!?=')
         self.assertEqual(out['Content-Transfer-Encoding'],
-                             'quoted-printable')
+                         'quoted-printable')
         self.assertEqual(out['Content-Type'], 'text/html; charset="utf-8"')
         self.assertEqual(
             out.get_payload(),
@@ -472,7 +472,7 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
         # explicit encoding was specified
         self.assertEqual(out['Subject'], '=?utf-8?q?Changed!?=')
         self.assertEqual(msg['Subject'],
-                             '=?utf-8?q?=C2=BFEsferificaci=C3=B3n=3F?=')
+                         '=?utf-8?q?=C2=BFEsferificaci=C3=B3n=3F?=')
 
     def testExplicitBase64Encoding(self):
         mailhost = self._makeOne('MailHost')
