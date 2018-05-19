@@ -4,6 +4,14 @@ Changelog
 4.1 (unreleased)
 ----------------
 
+- Fix GenericSetup support for GenericSetup 2.x
+
+- Fix DeprecationWarnings
+
+- PEP-8 code style compliance
+
+- Drop support for Python 3.4
+
 
 4.0 (2017-09-14)
 ----------------
