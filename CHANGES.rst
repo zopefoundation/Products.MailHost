@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.1 (unreleased)
+4.1 (2018-05-20)
 ----------------
 
 - Fix GenericSetup support for GenericSetup 2.x
