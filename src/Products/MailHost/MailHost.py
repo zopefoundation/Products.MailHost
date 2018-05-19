@@ -135,7 +135,7 @@ class MailBase(Implicit, Item, RoleManager):
         self.smtp_host = smtp_host
         self.smtp_port = smtp_port
 
-    security.declareProtected(change_configuration, 'manage_makeChanges')
+    @security.protected(change_configuration)
     def manage_makeChanges(self,
                            title,
                            smtp_host,
@@ -172,7 +172,7 @@ class MailBase(Implicit, Item, RoleManager):
             msg = 'MailHost %s updated' % self.id
             return self.manage_main(self, REQUEST, manage_tabs_message=msg)
 
-    security.declareProtected(use_mailhost_services, 'sendTemplate')
+    @security.protected(use_mailhost_services)
     def sendTemplate(trueself,
                      self,
                      messageTemplate,
@@ -200,7 +200,7 @@ class MailBase(Implicit, Item, RoleManager):
         except Exception:
             return "SEND OK"
 
-    security.declareProtected(use_mailhost_services, 'send')
+    @security.protected(use_mailhost_services)
     def send(self,
              messageText,
              mto=None,
@@ -224,7 +224,7 @@ class MailBase(Implicit, Item, RoleManager):
     security.declareProtected(use_mailhost_services, 'scheduledSend')
     scheduledSend = send
 
-    security.declareProtected(use_mailhost_services, 'simple_send')
+    @security.protected(use_mailhost_services)
     def simple_send(self, mto, mfrom, subject, body, immediate=False):
         body = "From: %s\nTo: %s\nSubject: %s\n\n%s" % (
             mfrom, mto, subject, body)
@@ -239,7 +239,7 @@ class MailBase(Implicit, Item, RoleManager):
                           password=self.smtp_pwd or None,
                           force_tls=self.force_tls)
 
-    security.declarePrivate('_getThreadKey')
+    @security.private
     def _getThreadKey(self):
         """ Return the key used to find our processor thread.
         """
@@ -272,7 +272,7 @@ class MailBase(Implicit, Item, RoleManager):
             queue_threads[key] = thread
             LOG.info('Thread for %s started' % key)
 
-    security.declareProtected(view, 'queueLength')
+    @security.protected(view)
     def queueLength(self):
         """ return length of mail queue """
 
@@ -283,7 +283,7 @@ class MailBase(Implicit, Item, RoleManager):
             return 'n/a - %s is not a maildir - please verify your ' \
                    'configuration' % self.smtp_queue_directory
 
-    security.declareProtected(view, 'queueThreadAlive')
+    @security.protected(view)
     def queueThreadAlive(self):
         """ return True/False is queue thread is working
         """
@@ -292,8 +292,7 @@ class MailBase(Implicit, Item, RoleManager):
             return th.isAlive()
         return False
 
-    security.declareProtected(change_configuration,
-                              'manage_restartQueueThread')
+    @security.protected(change_configuration)
     def manage_restartQueueThread(self, action='start', REQUEST=None):
         """ Restart the queue processor thread """
 
@@ -309,7 +308,7 @@ class MailBase(Implicit, Item, RoleManager):
                   (action == 'stop' and 'stopped' or 'started')
             return self.manage_main(self, REQUEST, manage_tabs_message=msg)
 
-    security.declarePrivate('_send')
+    @security.private
     def _send(self, mfrom, mto, messageText, immediate=False):
         """ Send the message """
 
