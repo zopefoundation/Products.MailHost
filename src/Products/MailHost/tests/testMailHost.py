@@ -68,55 +68,55 @@ Subject: This is the subject
 This is the message body."""
         # No additional info
         resmsg, resto, resfrom = _mungeHeaders(msg)
-        self.failUnless(resto == ['recipient@domain.com'])
-        self.failUnless(resfrom == 'sender@domain.com')
+        self.assertTrue(resto == ['recipient@domain.com'])
+        self.assertTrue(resfrom == 'sender@domain.com')
 
         # Add duplicated info
         resmsg, resto, resfrom = _mungeHeaders(
             msg, 'recipient@domain.com',
             'sender@domain.com', 'This is the subject')
-        self.failUnlessEqual(resto, ['recipient@domain.com'])
-        self.failUnlessEqual(resfrom, 'sender@domain.com')
+        self.assertEqual(resto, ['recipient@domain.com'])
+        self.assertEqual(resfrom, 'sender@domain.com')
 
         # Add extra info
         resmsg, resto, resfrom = _mungeHeaders(
             msg, 'recipient2@domain.com',
             'sender2@domain.com', 'This is the real subject')
-        self.failUnlessEqual(resto, ['recipient2@domain.com'])
-        self.failUnlessEqual(resfrom, 'sender2@domain.com')
+        self.assertEqual(resto, ['recipient2@domain.com'])
+        self.assertEqual(resfrom, 'sender2@domain.com')
 
     def testMissingHeaders(self):
         msg = """X-Header: Dummy header
 
 This is the message body."""
         # Doesn't specify to
-        self.failUnlessRaises(MailHostError, _mungeHeaders, msg,
-                              mfrom='sender@domain.com')
+        self.assertRaises(MailHostError, _mungeHeaders, msg,
+                          mfrom='sender@domain.com')
         # Doesn't specify from
-        self.failUnlessRaises(MailHostError, _mungeHeaders, msg,
-                              mto='recipient@domain.com')
+        self.assertRaises(MailHostError, _mungeHeaders, msg,
+                          mto='recipient@domain.com')
 
     def testNoHeaders(self):
         msg = """This is the message body."""
         # Doesn't specify to
-        self.failUnlessRaises(MailHostError, _mungeHeaders, msg,
-                              mfrom='sender@domain.com')
+        self.assertRaises(MailHostError, _mungeHeaders, msg,
+                          mfrom='sender@domain.com')
         # Doesn't specify from
-        self.failUnlessRaises(MailHostError, _mungeHeaders, msg,
-                              mto='recipient@domain.com')
+        self.assertRaises(MailHostError, _mungeHeaders, msg,
+                          mto='recipient@domain.com')
         # Specify all
         resmsg, resto, resfrom = _mungeHeaders(
             msg, 'recipient2@domain.com',
             'sender2@domain.com', 'This is the real subject')
-        self.failUnlessEqual(resto, ['recipient2@domain.com'])
-        self.failUnlessEqual(resfrom, 'sender2@domain.com')
+        self.assertEqual(resto, ['recipient2@domain.com'])
+        self.assertEqual(resfrom, 'sender2@domain.com')
 
     def testBCCHeader(self):
         msg = "From: me@example.com\nBcc: many@example.com\n\nMessage text"
         # Specify only the "Bcc" header.  Useful for bulk emails.
         resmsg, resto, resfrom = _mungeHeaders(msg)
-        self.failUnlessEqual(resto, ['many@example.com'])
-        self.failUnlessEqual(resfrom, 'me@example.com')
+        self.assertEqual(resto, ['many@example.com'])
+        self.assertEqual(resfrom, 'me@example.com')
 
     def test__getThreadKey_uses_fspath(self):
         mh1 = self._makeOne('mh1')
@@ -139,11 +139,11 @@ This is the message body."""
         # Test Address-Parser for To & CC given in messageText
 
         resmsg, resto, resfrom = _mungeHeaders(msg)
-        self.failUnlessEqual(
+        self.assertEqual(
             resto, ['"Name, Nick" <recipient@domain.com>',
                     'Foo Bar <foo@domain.com>',
                     '"Web, Jack" <jack@web.com>'])
-        self.failUnlessEqual(resfrom, 'sender@domain.com')
+        self.assertEqual(resfrom, 'sender@domain.com')
 
         # Test Address-Parser for a given mto-string
 
@@ -151,10 +151,10 @@ This is the message body."""
             msg,
             mto='"Public, Joe" <pjoe@domain.com>, Foo Bar <foo@domain.com>')
 
-        self.failUnlessEqual(
+        self.assertEqual(
             resto, ['"Public, Joe" <pjoe@domain.com>',
                     'Foo Bar <foo@domain.com>'])
-        self.failUnlessEqual(resfrom, 'sender@domain.com')
+        self.assertEqual(resfrom, 'sender@domain.com')
 
     def testSendMessageOnly(self):
         msg = """\
@@ -258,11 +258,11 @@ This is the message body."""
                       mfrom='sender@domain.com',
                       subject='This is the subject')
         out = message_from_string(mailhost.sent)
-        self.failUnlessEqual(out.get_payload(), msg)
-        self.failUnlessEqual(
+        self.assertEqual(out.get_payload(), msg)
+        self.assertEqual(
             out['To'],
             '"Name, Nick" <recipient@domain.com>, Foo Bar <foo@domain.com>')
-        self.failUnlessEqual(out['From'], 'sender@domain.com')
+        self.assertEqual(out['From'], 'sender@domain.com')
 
     def testSendEncodedBody(self):
         # If a charset is specified the correct headers for content
@@ -279,17 +279,17 @@ This is the message body."""
                       subject='This is the subject',
                       charset='utf-8')
         out = message_from_string(mailhost.sent)
-        self.failUnlessEqual(
+        self.assertEqual(
             out['To'],
             '"Name, Nick" <recipient@domain.com>, Foo Bar <foo@domain.com>')
-        self.failUnlessEqual(out['From'], 'sender@domain.com')
+        self.assertEqual(out['From'], 'sender@domain.com')
         # utf-8 will default to Quoted Printable encoding
-        self.failUnlessEqual(out['Content-Transfer-Encoding'],
-                             'quoted-printable')
-        self.failUnlessEqual(out['Content-Type'],
-                             'text/plain; charset="utf-8"')
-        self.failUnlessEqual(out.get_payload(),
-                             "Here's some encoded t=C3=A9xt.")
+        self.assertEqual(out['Content-Transfer-Encoding'],
+                         'quoted-printable')
+        self.assertEqual(out['Content-Type'],
+                         'text/plain; charset="utf-8"')
+        self.assertEqual(out.get_payload(),
+                         "Here's some encoded t=C3=A9xt.")
 
     def testEncodedHeaders(self):
         # Headers are encoded automatically, email headers are encoded
@@ -301,21 +301,21 @@ This is the message body."""
         mailhost.send(messageText='A message.', mto=mto, mfrom=mfrom,
                       subject=subject, charset='utf-8')
         out = message_from_string(mailhost.sent)
-        self.failUnlessEqual(
+        self.assertEqual(
             out['To'],
             '=?utf-8?q?Ferran_Adri=C3=A0?= <ferran@example.com>')
-        self.failUnlessEqual(
+        self.assertEqual(
             out['From'],
             '=?utf-8?q?Jos=C3=A9_Andr=C3=A9s?= <jose@example.com>')
-        self.failUnlessEqual(
+        self.assertEqual(
             out['Subject'],
             '=?utf-8?q?=C2=BFEsferificaci=C3=B3n=3F?=')
         # utf-8 will default to Quoted Printable encoding
-        self.failUnlessEqual(out['Content-Transfer-Encoding'],
-                             'quoted-printable')
-        self.failUnlessEqual(out['Content-Type'],
-                             'text/plain; charset="utf-8"')
-        self.failUnlessEqual(out.get_payload(), "A message.")
+        self.assertEqual(out['Content-Transfer-Encoding'],
+                         'quoted-printable')
+        self.assertEqual(out['Content-Type'],
+                         'text/plain; charset="utf-8"')
+        self.assertEqual(out.get_payload(), "A message.")
 
     def testAlreadyEncodedMessage(self):
         # If the message already specifies encodings, it is
@@ -334,10 +334,10 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
 """
         mailhost = self._makeOne('MailHost')
         mailhost.send(messageText=msg)
-        self.failUnlessEqual(mailhost.sent, msg)
+        self.assertEqual(mailhost.sent, msg)
         mailhost.send(messageText=msg, msg_type='text/plain')
         # The msg_type is ignored if already set
-        self.failUnlessEqual(mailhost.sent, msg)
+        self.assertEqual(mailhost.sent, msg)
 
     def testAlreadyEncodedMessageWithCharset(self):
         # If the message already specifies encodings, it is
@@ -364,13 +364,13 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
         # headers passed into the method will be encoded using the
         # specified charset
         out = message_from_string(mailhost.sent)
-        self.failUnlessEqual(out['Content-Type'], 'text/html; charset="utf-8"')
-        self.failUnlessEqual(out['Content-Transfer-Encoding'], 'base64')
+        self.assertEqual(out['Content-Type'], 'text/html; charset="utf-8"')
+        self.assertEqual(out['Content-Transfer-Encoding'], 'base64')
         # Headers set by parameter will be set using charset parameter
-        self.failUnlessEqual(out['Subject'],
-                             '=?iso-8859-1?q?=BFEsferificaci=F3n=3F?=')
+        self.assertEqual(out['Subject'],
+                         '=?iso-8859-1?q?=BFEsferificaci=F3n=3F?=')
         # original headers will be unaltered
-        self.failUnlessEqual(
+        self.assertEqual(
             out['From'],
             '=?utf-8?q?Jos=C3=A9_Andr=C3=A9s?= <jose@example.com>')
 
@@ -387,16 +387,16 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
                       mfrom=mfrom, subject=subject, charset='utf-8',
                       msg_type='text/html')
         out = message_from_string(mailhost.sent)
-        self.failUnlessEqual(
+        self.assertEqual(
             out['To'], '"Name, Nick" <recipient@domain.com>')
-        self.failUnlessEqual(
+        self.assertEqual(
             out['From'],
             '=?utf-8?q?Ferran_Adri=C3=A0?= <ferran@example.com>')
-        self.failUnlessEqual(out['Subject'], '=?utf-8?q?=C2=A1Andr=C3=A9s!?=')
-        self.failUnlessEqual(out['Content-Transfer-Encoding'],
-                             'quoted-printable')
-        self.failUnlessEqual(out['Content-Type'], 'text/html; charset="utf-8"')
-        self.failUnlessEqual(
+        self.assertEqual(out['Subject'], '=?utf-8?q?=C2=A1Andr=C3=A9s!?=')
+        self.assertEqual(out['Content-Transfer-Encoding'],
+                         'quoted-printable')
+        self.assertEqual(out['Content-Type'], 'text/html; charset="utf-8"')
+        self.assertEqual(
             out.get_payload(),
             "Here's some unencoded <strong>t=C3=A9xt</strong>.")
 
@@ -429,14 +429,14 @@ Here's some unencoded <strong>text</strong>."""
                       mfrom=u'Foo Bar <foo@domain.com>', subject=subject)
         out = mailhost.sent
         # Ensure the results are not unicode
-        self.failUnlessEqual(out, """\
+        self.assertEqual(out, """\
 Date: Sun, 27 Aug 2006 17:00:00 +0200
 Subject: Andres!
 To: "Name, Nick" <recipient@domain.com>
 From: Foo Bar <foo@domain.com>
 
 Here's some unencoded <strong>text</strong>.""")
-        self.failUnlessEqual(type(out), str)
+        self.assertEqual(type(out), str)
 
     def testSendMessageObject(self):
         # send will accept an email.Message.Message object directly
@@ -454,7 +454,7 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
         mailhost = self._makeOne('MailHost')
         mailhost.send(msg)
         out = message_from_string(mailhost.sent)
-        self.failUnlessEqual(out.as_string(), msg.as_string())
+        self.assertEqual(out.as_string(), msg.as_string())
 
         # we can even alter a from and subject headers without affecting the
         # original object
@@ -463,16 +463,16 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
         out = message_from_string(mailhost.sent)
 
         # We need to make sure we didn't mutate the message we were passed
-        self.failIfEqual(out.as_string(), msg.as_string())
-        self.failUnlessEqual(out['From'], 'Foo Bar <foo@domain.com>')
-        self.failUnlessEqual(
+        self.assertNotEqual(out.as_string(), msg.as_string())
+        self.assertEqual(out['From'], 'Foo Bar <foo@domain.com>')
+        self.assertEqual(
             msg['From'],
             '=?utf-8?q?Jos=C3=A9_Andr=C3=A9s?= <jose@example.com>')
         # The subject is encoded with the body encoding since no
         # explicit encoding was specified
-        self.failUnlessEqual(out['Subject'], '=?utf-8?q?Changed!?=')
-        self.failUnlessEqual(msg['Subject'],
-                             '=?utf-8?q?=C2=BFEsferificaci=C3=B3n=3F?=')
+        self.assertEqual(out['Subject'], '=?utf-8?q?Changed!?=')
+        self.assertEqual(msg['Subject'],
+                         '=?utf-8?q?=C2=BFEsferificaci=C3=B3n=3F?=')
 
     def testExplicitBase64Encoding(self):
         mailhost = self._makeOne('MailHost')
@@ -481,7 +481,7 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
                       mto='Foo Bar <foo@domain.com>', encode='base64')
         # Explicitly stripping the output here since the base64 encoder
         # in Python 3 adds a line break at the end.
-        self.failUnlessEqual(mailhost.sent.strip(), """\
+        self.assertEqual(mailhost.sent.strip(), """\
 Date: Sun, 27 Aug 2006 17:00:00 +0200
 Subject: [No Subject]
 To: Foo Bar <foo@domain.com>
@@ -496,7 +496,7 @@ QSBNZXNzYWdl""")
         mailhost.send('Date: Sun, 27 Aug 2006 17:00:00 +0200\n\nA Message',
                       mfrom='sender@domain.com',
                       mto='Foo Bar <foo@domain.com>', encode='7bit')
-        self.failUnlessEqual(mailhost.sent, """\
+        self.assertEqual(mailhost.sent, """\
 Date: Sun, 27 Aug 2006 17:00:00 +0200
 Subject: [No Subject]
 To: Foo Bar <foo@domain.com>
@@ -514,7 +514,7 @@ A Message""")
                       'A M\xc3\xa9ssage',
                       mfrom='sender@domain.com',
                       mto='Foo Bar <foo@domain.com>', encode='8bit')
-        self.failUnlessEqual(mailhost.sent, """\
+        self.assertEqual(mailhost.sent, """\
 Date: Sun, 27 Aug 2006 17:00:00 +0200
 Subject: [No Subject]
 To: Foo Bar <foo@domain.com>
@@ -530,17 +530,17 @@ A M\xc3\xa9ssage""")
         result = mailhost.sendTemplate(content, 'my_template',
                                        mto='Foo Bar <foo@domain.com>',
                                        mfrom='sender@domain.com')
-        self.failUnlessEqual(result, 'SEND OK')
+        self.assertEqual(result, 'SEND OK')
         result = mailhost.sendTemplate(content, 'my_template',
                                        mto='Foo Bar <foo@domain.com>',
                                        mfrom='sender@domain.com',
                                        statusTemplate='wrong_name')
-        self.failUnlessEqual(result, 'SEND OK')
+        self.assertEqual(result, 'SEND OK')
         result = mailhost.sendTemplate(content, 'my_template',
                                        mto='Foo Bar <foo@domain.com>',
                                        mfrom='sender@domain.com',
                                        statusTemplate='check_status')
-        self.failUnlessEqual(result, 'Message Sent')
+        self.assertEqual(result, 'Message Sent')
 
     def testSendMultiPartAlternativeMessage(self):
         msg = ("""\

@@ -16,7 +16,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Products.MailHost',
-    version='4.1.dev0',
+    version='4.2.dev0',
     url='http://pypi.python.org/pypi/Products.MailHost',
     license='ZPL 2.1',
     description="zope.sendmail integration for Zope 2.",
@@ -37,7 +37,6 @@ setup(
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: Implementation :: CPython",
@@ -52,13 +51,13 @@ setup(
         'DocumentTemplate',
         'ExtensionClass>=4.1a1',
         'Persistence',
-        'Zope2 >= 4.0a5',
+        'Zope >= 4.0b4',
         'zope.deferredimport',
         'zope.interface',
         'zope.sendmail',
     ],
     extras_require={
-        'genericsetup': ['Products.GenericSetup'],
+        'genericsetup': ['Products.GenericSetup >= 2.0b1'],
     },
     include_package_data=True,
     zip_safe=False,

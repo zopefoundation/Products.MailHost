@@ -1,10 +1,22 @@
 Changelog
 =========
 
-4.1 (unreleased)
+4.2 (unreleased)
 ----------------
 
 - Fix tests to run with `Products.GenericSetup >= 1.10`.
+
+4.1 (2018-05-20)
+----------------
+
+- Fix GenericSetup support for GenericSetup 2.x
+
+- Fix DeprecationWarnings
+
+- PEP-8 code style compliance
+
+- Drop support for Python 3.4
+
 
 4.0 (2017-09-14)
 ----------------

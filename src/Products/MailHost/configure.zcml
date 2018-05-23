@@ -3,7 +3,6 @@
     xmlns:zcml="http://namespaces.zope.org/zcml">
 
   <include
-      zcml:condition="have moved_mailhost"
       file="exportimport.zcml"
       />
 

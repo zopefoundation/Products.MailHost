@@ -2,16 +2,17 @@ language: python
 sudo: false
 python:
     - 2.7
-    - 3.4
     - 3.5
     - 3.6
+env:
+    - EXTRA=
+    - EXTRA=_with_gs
 install:
     - pip install -U setuptools==33.1.1
     - python bootstrap.py
     - bin/buildout
 script:
-    - bin/test -vc1
-    - bin/test_with_gs -vc1
+    - bin/test$EXTRA -v1
 notifications:
     email: false
 cache:
