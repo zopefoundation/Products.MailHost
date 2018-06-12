@@ -25,6 +25,8 @@ Changelog
 
 - Python 3 compatibility
 
+- Require Zope 4, aka drop Zope 2.13 support.
+
 - add test coverage reporting
 
 - Use `@implementer` class decorator.

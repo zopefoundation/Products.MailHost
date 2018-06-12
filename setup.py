@@ -17,9 +17,9 @@ from setuptools import setup, find_packages
 setup(
     name='Products.MailHost',
     version='4.2.dev0',
-    url='http://pypi.python.org/pypi/Products.MailHost',
+    url='https://github.com/zopefoundation/Products.MailHost',
     license='ZPL 2.1',
-    description="zope.sendmail integration for Zope 2.",
+    description="zope.sendmail integration for Zope.",
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',
     long_description=(open('README.rst').read() + '\n' +
@@ -30,7 +30,7 @@ setup(
     classifiers=[
         "Development Status :: 6 - Mature",
         "Environment :: Web Environment",
-        "Framework :: Zope2",
+        "Framework :: Zope :: 4",
         "License :: OSI Approved :: Zope Public License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
