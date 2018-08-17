@@ -8,13 +8,16 @@ env:
     - EXTRA=
     - EXTRA=_with_gs
 install:
-    - pip install -U setuptools==33.1.1
-    - python bootstrap.py
-    - bin/buildout
+    - pip install coverage coveralls
+    - pip install zc.buildout
+    - buildout bootstrap
+    - buildout install test
 script:
-    - bin/test$EXTRA -v1
+    - coverage run bin/test$EXTRA -v1
 notifications:
     email: false
+after_success:
+    - coveralls
 cache:
   pip: true
   directories:
