@@ -68,8 +68,8 @@ Subject: This is the subject
 This is the message body."""
         # No additional info
         resmsg, resto, resfrom = _mungeHeaders(msg)
-        self.assertTrue(resto == ['recipient@domain.com'])
-        self.assertTrue(resfrom == 'sender@domain.com')
+        self.assertEqual(resto, ['recipient@domain.com'])
+        self.assertEqual(resfrom, 'sender@domain.com')
 
         # Add duplicated info
         resmsg, resto, resfrom = _mungeHeaders(
@@ -90,20 +90,20 @@ This is the message body."""
 
 This is the message body."""
         # Doesn't specify to
-        self.assertRaises(MailHostError, _mungeHeaders, msg,
-                          mfrom='sender@domain.com')
+        with self.assertRaises(MailHostError):
+            _mungeHeaders(msg, mfrom='sender@domain.com')
         # Doesn't specify from
-        self.assertRaises(MailHostError, _mungeHeaders, msg,
-                          mto='recipient@domain.com')
+        with self.assertRaises(MailHostError):
+            _mungeHeaders(msg, mto='recipient@domain.com')
 
     def testNoHeaders(self):
         msg = """This is the message body."""
         # Doesn't specify to
-        self.assertRaises(MailHostError, _mungeHeaders, msg,
-                          mfrom='sender@domain.com')
+        with self.assertRaises(MailHostError):
+            _mungeHeaders(msg, mfrom='sender@domain.com')
         # Doesn't specify from
-        self.assertRaises(MailHostError, _mungeHeaders, msg,
-                          mto='recipient@domain.com')
+        with self.assertRaises(MailHostError):
+            _mungeHeaders(msg, mto='recipient@domain.com')
         # Specify all
         resmsg, resto, resfrom = _mungeHeaders(
             msg, 'recipient2@domain.com',
