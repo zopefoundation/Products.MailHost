@@ -93,7 +93,7 @@ class MailBase(Implicit, Item, RoleManager):
     """a mailhost...?"""
 
     meta_type = 'Mail Host'
-    zmi_icon = 'icon-mail'
+    zmi_icon = 'far fa-envelope'
     manage = manage_main = DTMLFile('dtml/manageMailHost', globals())
     manage_main._setName('manage_main')
     index_html = None
