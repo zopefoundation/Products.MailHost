@@ -6,6 +6,10 @@ Changelog
 
 - Add icon for Bootstrap ZMI.
 
+- Fix start-up in case ``Products.GenericSetup`` is not installed.
+  (`#9 <https://github.com/zopefoundation/Products.MailHost/issues/9>`_)
+
+
 4.1 (2018-05-20)
 ----------------
 
