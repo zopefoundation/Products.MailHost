@@ -9,6 +9,8 @@ Changelog
 - Fix start-up in case ``Products.GenericSetup`` is not installed.
   (`#9 <https://github.com/zopefoundation/Products.MailHost/issues/9>`_)
 
+- Add support for Python 3.7.
+
 
 4.1 (2018-05-20)
 ----------------
