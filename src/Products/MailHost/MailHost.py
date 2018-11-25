@@ -58,7 +58,7 @@ LOG = logging.getLogger('MailHost')
 
 # Encode utf-8 emails as Quoted Printable by default
 email.charset.add_charset("utf-8", email.charset.QP, email.charset.QP, "utf-8")
-CHARSET_RE = re.compile('charset=[\'"]?([\w-]+)[\'"]?', re.IGNORECASE)
+CHARSET_RE = re.compile(r'charset=[\'"]?([\w-]+)[\'"]?', re.IGNORECASE)
 
 
 class MailHostError(Exception):

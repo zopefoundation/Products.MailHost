@@ -4,7 +4,8 @@ Changelog
 4.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- silence deprecation warning due to non-raw regex
+  (`#13 <https://github.com/zopefoundation/Products.MailHost/issues/13>`_)
 
 
 4.2 (2018-10-05)
