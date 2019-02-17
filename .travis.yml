@@ -8,11 +8,15 @@ matrix:
     include:
         - python: "3.7"
           dist: xenial
-          sudo: true
           env: EXTRA=_with_gs
         - python: "3.7"
           dist: xenial
-          sudo: true
+          env: EXTRA=
+        - python: "3.8"
+          dist: xenial
+          env: EXTRA=_with_gs
+        - python: "3.8"
+          dist: xenial
           env: EXTRA=
 env:
     - EXTRA=

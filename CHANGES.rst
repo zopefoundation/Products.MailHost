@@ -7,6 +7,11 @@ Changelog
 - silence deprecation warning due to non-raw regex
   (`#13 <https://github.com/zopefoundation/Products.MailHost/issues/13>`_)
 
+- Specify supported Python versions using ``python_requires`` in setup.py
+  (`Zope#481 <https://github.com/zopefoundation/Zope/issues/481>`_)
+
+- Add support for Python 3.8
+
 
 4.2 (2018-10-05)
 ----------------
