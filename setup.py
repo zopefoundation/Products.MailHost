@@ -22,7 +22,7 @@ def _read(fname):
 
 setup(
     name='Products.MailHost',
-    version='4.3',
+    version='4.4.dev0',
     url='https://github.com/zopefoundation/Products.MailHost',
     license='ZPL 2.1',
     description="zope.sendmail integration for Zope.",
