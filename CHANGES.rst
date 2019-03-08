@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.3 (unreleased)
+4.3 (2019-03-08)
 ----------------
 
 - silence deprecation warning due to non-raw regex
