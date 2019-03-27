@@ -12,6 +12,9 @@ Email can optionally be encoded using Base64, Quoted-Printable or UUEncode
 encoding (though automatic body encoding will be applied if a character set is
 specified).
 
+Usage
+-----
+
 MailHost provides integration with the Zope transaction system and optional
 support for asynchronous mail delivery. Asynchronous mail delivery is
 implemented using a queue and a dedicated thread processing the queue. The
@@ -21,3 +24,10 @@ manage_restartQueueThread?action=start method through HTTP. There is currently
 no possibility to start the thread at Zope startup time.
 
 Supports TLS/SSL encryption (requires Python compiled with SSL support).
+
+Configuration
+-------------
+
+To force MailHost to only queue mails without sending them, activate queuing
+in the ZMI and set the environment variable ``MAILHOST_QUEUE_ONLY=1``.
+This could be helpful in a staging environment where mails should not be sent.

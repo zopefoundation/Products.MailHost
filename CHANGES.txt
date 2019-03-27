@@ -4,6 +4,9 @@ Changelog
 2.13.3 (unreleased)
 -------------------
 
+- Add ability to disable sending of queued mails. Details see README.txt.
+  (`#14 <https://github.com/zopefoundation/Products.MailHost/issues/14>`_)
+
 
 2.13.2 (2014-11-02)
 -------------------
