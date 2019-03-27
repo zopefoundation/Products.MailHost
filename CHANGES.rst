@@ -4,7 +4,8 @@ Changelog
 4.4 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add ability to disable sending of queued mails. Details see README.rst.
+  (`#14 <https://github.com/zopefoundation/Products.MailHost/issues/14>`_)
 
 
 4.3 (2019-03-08)

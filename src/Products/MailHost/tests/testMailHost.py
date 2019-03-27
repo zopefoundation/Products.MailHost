@@ -14,8 +14,13 @@
 """
 
 from email import message_from_string
+import os.path
+import shutil
 import six
+import tempfile
+import transaction
 import unittest
+import zope.sendmail.maildir
 
 from Products.MailHost.MailHost import MailHost
 from Products.MailHost.MailHost import MailHostError, _mungeHeaders
@@ -636,3 +641,62 @@ D=EDt =EFs =E9=E9n test
         # (TypeError: expected string or buffer)
         mailhost.send(msg, charset='utf-8')
         self.assertEqual(mailhost.sent, msg)
+
+
+class QueueingDummyMailHost(MailHost):
+    """Dummy mail host implementation which supports queueing."""
+
+    meta_type = 'Queueing Dummy Mail Host'
+
+    def __init__(self, id, smtp_queue_directory):
+        self.id = id
+        self.smtp_queue = True
+        self.smtp_queue_directory = smtp_queue_directory
+        self.started_queue_processor_thread = False
+
+    def _startQueueProcessorThread(self):
+        self.started_queue_processor_thread = True
+
+
+class TestMailHostQueuing(unittest.TestCase):
+
+    smtp_queue_directory = None
+
+    def _getTargetClass(self):
+        return QueueingDummyMailHost
+
+    def _makeOne(self, *args):
+        self.tmpdir = tempfile.mkdtemp(suffix='MailHostTests')
+        self.smtp_queue_directory = os.path.join(self.tmpdir, 'queue')
+        return self._getTargetClass()(
+            *args, smtp_queue_directory=self.smtp_queue_directory)
+
+    def _callFUT(self):
+        mh = self._makeOne('MailHost')
+        mh.send(
+            'Nice to see you!',
+            mto='user@example.com',
+            mfrom='zope@example.com',
+            subject='Hello world')
+        transaction.commit()
+        return mh
+
+    def tearDown(self):
+        super(TestMailHostQueuing, self).tearDown()
+        shutil.rmtree(self.tmpdir, ignore_errors=True)
+
+    def testStartQueueProcessorThread(self):
+        mh = self._callFUT()
+        self.assertTrue(mh.started_queue_processor_thread)
+        md = zope.sendmail.maildir.Maildir(self.smtp_queue_directory)
+        self.assertEqual(len(list(md)), 1)
+
+    def testNotStartQueueProcessorThread(self):
+        os.environ['MAILHOST_QUEUE_ONLY'] = '1'
+        try:
+            mh = self._callFUT()
+        finally:
+            del os.environ['MAILHOST_QUEUE_ONLY']
+        self.assertFalse(mh.started_queue_processor_thread)
+        md = zope.sendmail.maildir.Maildir(self.smtp_queue_directory)
+        self.assertEqual(len(list(md)), 1)

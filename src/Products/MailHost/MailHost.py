@@ -22,6 +22,7 @@ from email.utils import formataddr
 from email.utils import getaddresses
 from email.utils import parseaddr
 import logging
+import os
 from os.path import realpath
 import re
 import six
@@ -318,7 +319,8 @@ class MailBase(Implicit, Item, RoleManager):
         else:
             if self.smtp_queue:
                 # Start queue processor thread, if necessary
-                self._startQueueProcessorThread()
+                if not os.environ.get('MAILHOST_QUEUE_ONLY', False):
+                    self._startQueueProcessorThread()
                 delivery = QueuedMailDelivery(self.smtp_queue_directory)
             else:
                 delivery = DirectMailDelivery(self._makeMailer())
