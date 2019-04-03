@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.13.3 (unreleased)
+2.13.3 (2019-04-03)
 -------------------
 
 - Add ability to disable sending of queued mails. Details see README.txt.
