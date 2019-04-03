@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.4 (unreleased)
+4.4 (2019-04-03)
 ----------------
 
 - Add ability to disable sending of queued mails. Details see README.rst.
