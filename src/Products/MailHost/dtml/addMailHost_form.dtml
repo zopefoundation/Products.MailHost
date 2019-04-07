@@ -1,69 +1,56 @@
 <dtml-var manage_page_header>
 
-<dtml-var "manage_form_title(this(), _,
-           form_title='Add MailHost'
-	   )">
+<dtml-var "manage_form_title(this(), _, form_title='Add MailHost')">
 
-<p class="form-help">
-MailHost object provide a way to send email from Zope code in DTML or 
-Python Scripts. <em>SMTP host</em> is the name of the mail server machine.
-<em>SMTP port</em> is the port on which the mail server is running the 
-SMTP service.
-</p>
+<main class="container-fluid">
 
-<form action="manage_addMailHost" method="post">
-<table cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-label">
-    Id
+  <p class="form-help">
+    MailHost object provide a way to send email from Zope code in DTML or 
+    Python Scripts. <em>SMTP host</em> is the name of the mail server machine.
+    <em>SMTP port</em> is the port on which the mail server is running the 
+    SMTP service.
+  </p>
+  
+  <form action="manage_addMailHost" method="post">
+  
+    <div class="form-group row">
+      <label for="id" class="form-label col-sm-3 col-md-2">Id</label>
+      <div class="col-sm-9 col-md-10">
+        <input id="id" class="form-control" type="text" name="id"/>
+      </div>
     </div>
-    </td>
-    <td align="left" valign="top">
-    <input type="text" name="id" size="40" value="MailHost" />
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-optional">
-    Title
+
+    <div class="form-group row">
+      <label for="title" class="form-label col-sm-3 col-md-2">Title</label>
+      <div class="col-sm-9 col-md-10">
+        <input id="title" class="form-control" type="text" name="title"/>
+      </div>
     </div>
-    </td>
-    <td align="left" valign="top">
-    <input type="text" name="title" size="40" />
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-label">
-    SMTP Host
+ 
+    <div class="form-group row">
+      <label for="smtp_host" class="form-label col-sm-3 col-md-2">
+        SMTP host
+      </label>
+      <div class="col-sm-9 col-md-10">
+        <input id="smtp_host" class="form-control" type="text"
+               name="smtp_host" value="localhost"/>
+      </div>
     </div>
-    </td>
-    <td align="left" valign="top">
-    <input type="text" name="smtp_host" size="40" value="localhost" />
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-label">
-    SMTP Port
+
+    <div class="form-group row">
+      <label for="smtp_port" class="form-label col-sm-3 col-md-2">
+        SMTP port
+      </label>
+      <div class="col-sm-9 col-md-10">
+        <input id="smtp_port" class="form-control" type="text"
+               name="smtp_port" value="25"/>
+      </div>
     </div>
-    </td>
-    <td align="left" valign="top">
-    <input type="text" name="smtp_port:int" size="4" value="25" />
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
-    </td>
-    <td align="left" valign="top">
-    <div class="form-element">
-    <input class="form-element" type="submit" name="submit" 
-     value=" Add " /> 
+
+    <div class="zmi-controls">
+      <input class="btn btn-primary" type="submit" name="submit" value="Add" />
     </div>
-    </td>
-  </tr>
-</table>
-</form>
+ 
+ </main>
 
 <dtml-var manage_page_footer>

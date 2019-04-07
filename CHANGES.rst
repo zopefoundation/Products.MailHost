@@ -4,6 +4,9 @@ Changelog
 4.5 (unreleased)
 ----------------
 
+- Changed ZMI forms for Zope 4 ZMI compliance
+  (`#17 <https://github.com/zopefoundation/Products.MailHost/issues/17>`_)
+
 - Packaging and test configuration cleanup
 
 - Add badges to the README
