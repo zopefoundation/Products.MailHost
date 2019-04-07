@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.5 (unreleased)
+4.5 (2019-04-07)
 ----------------
 
 - Prevent ZMI blowups when pointing to a non-Maildir queue folder
