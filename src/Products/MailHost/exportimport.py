@@ -15,12 +15,10 @@
 
 import six
 
-from zope.component import adapts
-
 from Products.GenericSetup.interfaces import ISetupEnviron
 from Products.GenericSetup.utils import XMLAdapterBase
-
 from Products.MailHost.interfaces import IMailHost
+from zope.component import adapts
 
 
 class MailHostXMLAdapter(XMLAdapterBase):
@@ -70,7 +68,7 @@ class MailHostXMLAdapter(XMLAdapterBase):
         smtp_uid = node.getAttribute('smtp_uid')
         smtp_pwd = node.getAttribute('smtp_pwd')
         if six.PY2:
-            # XXX Why?
+            # ??? Why?
             self.context.smtp_uid = smtp_uid.encode('utf-8')
             self.context.smtp_pwd = smtp_pwd.encode('utf-8')
         else:

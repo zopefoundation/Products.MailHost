@@ -11,15 +11,15 @@
 #
 ##############################################################################
 
+from DocumentTemplate.DT_String import String
 from DocumentTemplate.DT_Util import parse_params
 from DocumentTemplate.DT_Util import render_blocks
-from DocumentTemplate.DT_String import String
-
-from Products.MailHost.MailHost import MailBase, MailHostError
+from Products.MailHost.MailHost import MailBase
+from Products.MailHost.MailHost import MailHostError
 
 
 class SendMailTag(object):
-    '''the send mail tag, used like thus:
+    """the send mail tag, used like thus:
 
     <dtml-sendmail mailhost="someMailHostID">
     to: person@their.machine.com
@@ -52,7 +52,7 @@ class SendMailTag(object):
     * encode -- optional encoding. Possible values are: 'base64' and
      'quoted-printable'.
 
-    '''
+    """
 
     name = 'sendmail'
     blockContinuations = ()

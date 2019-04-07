@@ -13,17 +13,26 @@
 """MailHost unit tests.
 """
 
-from email import message_from_string
 import os.path
 import shutil
-import six
 import tempfile
-import transaction
 import unittest
-import zope.sendmail.maildir
+from email import message_from_string
 
+import six
+
+import transaction
+import zope.sendmail.maildir
 from Products.MailHost.MailHost import MailHost
-from Products.MailHost.MailHost import MailHostError, _mungeHeaders
+from Products.MailHost.MailHost import MailHostError
+from Products.MailHost.MailHost import _mungeHeaders
+
+
+# Appease flake8
+if six.PY2:
+    unicode = unicode  # NOQA: flake8: F821
+else:
+    unicode = str
 
 
 class DummyMailHost(MailHost):
@@ -117,7 +126,7 @@ This is the message body."""
         self.assertEqual(resfrom, 'sender2@domain.com')
 
     def testBCCHeader(self):
-        msg = "From: me@example.com\nBcc: many@example.com\n\nMessage text"
+        msg = 'From: me@example.com\nBcc: many@example.com\n\nMessage text'
         # Specify only the "Bcc" header.  Useful for bulk emails.
         resmsg, resto, resfrom = _mungeHeaders(msg)
         self.assertEqual(resto, ['many@example.com'])
@@ -299,9 +308,9 @@ This is the message body."""
     def testEncodedHeaders(self):
         # Headers are encoded automatically, email headers are encoded
         # piece-wise to ensure the adresses remain ASCII
-        mfrom = b"Jos\xc3\xa9 Andr\xc3\xa9s <jose@example.com>"
-        mto = b"Ferran Adri\xc3\xa0 <ferran@example.com>"
-        subject = b"\xc2\xbfEsferificaci\xc3\xb3n?"
+        mfrom = b'Jos\xc3\xa9 Andr\xc3\xa9s <jose@example.com>'
+        mto = b'Ferran Adri\xc3\xa0 <ferran@example.com>'
+        subject = b'\xc2\xbfEsferificaci\xc3\xb3n?'
         mailhost = self._makeOne('MailHost')
         mailhost.send(messageText='A message.', mto=mto, mfrom=mfrom,
                       subject=subject, charset='utf-8')
@@ -320,7 +329,7 @@ This is the message body."""
                          'quoted-printable')
         self.assertEqual(out['Content-Type'],
                          'text/plain; charset="utf-8"')
-        self.assertEqual(out.get_payload(), "A message.")
+        self.assertEqual(out.get_payload(), 'A message.')
 
     def testAlreadyEncodedMessage(self):
         # If the message already specifies encodings, it is

@@ -11,46 +11,44 @@
 #
 ##############################################################################
 
+import email.charset
+import logging
+import os
+import re
+import time
 from copy import deepcopy
 from email import encoders
 from email import message_from_string
-import email.charset
 from email.charset import Charset
 from email.header import Header
 from email.message import Message
 from email.utils import formataddr
 from email.utils import getaddresses
 from email.utils import parseaddr
-import logging
-import os
 from os.path import realpath
-import re
-import six
 from threading import Lock
-import time
+
+import six
 
 from AccessControl.class_init import InitializeClass
-from AccessControl.SecurityInfo import ClassSecurityInfo
-from AccessControl.Permissions import change_configuration, view
+from AccessControl.Permissions import change_configuration
 from AccessControl.Permissions import use_mailhost_services
+from AccessControl.Permissions import view
+from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import Implicit
 from App.special_dtml import DTMLFile
 from DateTime.DateTime import DateTime
-from Persistence import Persistent
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
-
-from zope.interface import implementer
-from zope.sendmail.mailer import SMTPMailer
-from zope.sendmail.maildir import Maildir
-from zope.sendmail.delivery import (
-    DirectMailDelivery,
-    QueuedMailDelivery,
-    QueueProcessorThread,
-)
-
-from Products.MailHost.interfaces import IMailHost
+from Persistence import Persistent
 from Products.MailHost.decorator import synchronized
+from Products.MailHost.interfaces import IMailHost
+from zope.interface import implementer
+from zope.sendmail.delivery import DirectMailDelivery
+from zope.sendmail.delivery import QueuedMailDelivery
+from zope.sendmail.delivery import QueueProcessorThread
+from zope.sendmail.maildir import Maildir
+from zope.sendmail.mailer import SMTPMailer
 
 
 queue_threads = {}  # maps MailHost path -> queue processor threada
@@ -58,7 +56,7 @@ queue_threads = {}  # maps MailHost path -> queue processor threada
 LOG = logging.getLogger('MailHost')
 
 # Encode utf-8 emails as Quoted Printable by default
-email.charset.add_charset("utf-8", email.charset.QP, email.charset.QP, "utf-8")
+email.charset.add_charset('utf-8', email.charset.QP, email.charset.QP, 'utf-8')
 CHARSET_RE = re.compile(r'charset=[\'"]?([\w-]+)[\'"]?', re.IGNORECASE)
 
 
@@ -195,12 +193,12 @@ class MailBase(Implicit, Item, RoleManager):
                       charset=charset, msg_type=msg_type)
 
         if not statusTemplate:
-            return "SEND OK"
+            return 'SEND OK'
         try:
             stemplate = getattr(self, statusTemplate)
             return stemplate(self, trueself.REQUEST)
         except Exception:
-            return "SEND OK"
+            return 'SEND OK'
 
     @security.protected(use_mailhost_services)
     def send(self,
@@ -223,12 +221,13 @@ class MailBase(Implicit, Item, RoleManager):
 
     # This is here for backwards compatibility only. Possibly it could
     # be used to send messages at a scheduled future time, or via a mail queue?
-    security.declareProtected(use_mailhost_services, 'scheduledSend')
+    security.declareProtected(use_mailhost_services,  # NOQA: flake8: D001
+                              'scheduledSend')
     scheduledSend = send
 
     @security.protected(use_mailhost_services)
     def simple_send(self, mto, mfrom, subject, body, immediate=False):
-        body = "From: %s\nTo: %s\nSubject: %s\n\n%s" % (
+        body = 'From: %s\nTo: %s\nSubject: %s\n\n%s' % (
             mfrom, mto, subject, body)
 
         self._send(mfrom, mto, body, immediate)
@@ -426,10 +425,10 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
             if v:
                 mto += [formataddr(addr) for addr in getaddresses((v, ))]
         if not mto:
-            raise MailHostError("No message recipients designated")
+            raise MailHostError('No message recipients designated')
 
     if mfrom:
-        # XXX: do we really want to override an explicitly set From
+        # ??? do we really want to override an explicitly set From
         # header in the messageText
         del mo['From']
         mo['From'] = _encode_address_string(mfrom, charset)

@@ -4,7 +4,9 @@ Changelog
 4.5 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Packaging and test configuration cleanup
+
+- Add badges to the README
 
 
 4.4 (2019-04-03)

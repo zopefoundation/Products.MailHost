@@ -1,5 +1,19 @@
-Overview
-========
+.. image:: https://api.travis-ci.org/zopefoundation/Products.MailHost.svg?branch=master
+   :target: https://travis-ci.org/zopefoundation/Products.MailHost
+
+.. image:: https://coveralls.io/repos/github/zopefoundation/Products.MailHost/badge.svg?branch=master
+   :target: https://coveralls.io/github/zopefoundation/Products.MailHost?branch=master
+
+.. image:: https://img.shields.io/pypi/v/Products.MailHost.svg
+   :target: https://pypi.org/project/Products.MailHost/
+   :alt: Latest stable release on PyPI
+
+.. image:: https://img.shields.io/pypi/pyversions/Products.MailHost.svg
+   :target: https://pypi.org/project/Products.MailHost/
+   :alt: Stable release supported Python versions
+
+Products.MailHost
+=================
 
 The MailHost product provides support for sending email from within the Zope
 environment using MailHost objects.
