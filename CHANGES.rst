@@ -4,6 +4,9 @@ Changelog
 4.5 (unreleased)
 ----------------
 
+- Prevent ZMI blowups when pointing to a non-Maildir queue folder
+  (`#2 <https://github.com/zopefoundation/Products.MailHost/issues/2>`_)
+
 - Changed ZMI forms for Zope 4 ZMI compliance
   (`#17 <https://github.com/zopefoundation/Products.MailHost/issues/17>`_)
 

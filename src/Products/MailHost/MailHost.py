@@ -161,15 +161,18 @@ class MailBase(Implicit, Item, RoleManager):
         self.smtp_queue = smtp_queue
         self.smtp_queue_directory = smtp_queue_directory
 
-        # restart queue processor thread
-        if self.smtp_queue:
-            self._stopQueueProcessorThread()
-            self._startQueueProcessorThread()
-        else:
-            self._stopQueueProcessorThread()
+        try:
+            # restart queue processor thread
+            if self.smtp_queue:
+                self._stopQueueProcessorThread()
+                self._startQueueProcessorThread()
+            else:
+                self._stopQueueProcessorThread()
+            msg = 'MailHost %s updated' % self.id
+        except ValueError as exc:
+            msg = str(exc)
 
         if REQUEST is not None:
-            msg = 'MailHost %s updated' % self.id
             return self.manage_main(self, REQUEST, manage_tabs_message=msg)
 
     @security.protected(use_mailhost_services)
