@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.6 (unreleased)
+4.6 (2019-05-16)
 ----------------
 
 - Fix breaking sendmail tag rendering with DocumentTemplate > 3
