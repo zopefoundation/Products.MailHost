@@ -6,6 +6,7 @@ parts
 *.pyc
 *.pyo
 .installed.cfg
+default.profraw
 develop-eggs/
 eggs/
 *.egg-info/
