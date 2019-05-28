@@ -179,7 +179,8 @@ This is the message body."""
         mailhost.send(messageText=inmsg,
                       mto='"Name, Nick" <recipient@example.com>, '
                           '"Foo Bar" <foo@example.com>',
-                      mfrom='sender@example.com', subject='This is the subject')
+                      mfrom='sender@example.com',
+                      subject='This is the subject')
         self.assertEqual(mailhost.sent, outmsg)
 
     def testSendWithMtoList(self):
@@ -200,7 +201,8 @@ This is the message body."""
         mailhost.send(messageText=inmsg,
                       mto=['"Name, Nick" <recipient@example.com>',
                            '"Foo Bar" <foo@example.com>'],
-                      mfrom='sender@example.com', subject='This is the subject')
+                      mfrom='sender@example.com',
+                      subject='This is the subject')
         self.assertEqual(mailhost.sent, outmsg)
 
     def testSimpleSend(self):
@@ -630,15 +632,15 @@ D=EDt =EFs =E9=E9n test
         self.assertEqual(mailhost.sent, msg)
 
     def test_manage_makeChanges(self):
-        mailhost = self._makeOne("MailHost")
+        mailhost = self._makeOne('MailHost')
 
         mailhost.manage_makeChanges(
-            title="MailHost",
-            smtp_host="localhost",
-            smtp_port="25",
+            title='MailHost',
+            smtp_host='localhost',
+            smtp_port='25',
         )
-        self.assertEqual(mailhost.title, "MailHost")
-        self.assertEqual(mailhost.smtp_host, "localhost")
+        self.assertEqual(mailhost.title, 'MailHost')
+        self.assertEqual(mailhost.smtp_host, 'localhost')
         self.assertEqual(mailhost.smtp_port, 25)
 
 
