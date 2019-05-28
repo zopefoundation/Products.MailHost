@@ -285,7 +285,7 @@ This is the message body."""
 
     def testEncodedHeaders(self):
         # Headers are encoded automatically, email headers are encoded
-        # piece-wise to ensure the adresses remain ASCII
+        # piece-wise to ensure the addresses remain ASCII
         mfrom = b'Jos\xc3\xa9 Andr\xc3\xa9s <jose@example.com>'
         mto = b'Ferran Adri\xc3\xa0 <ferran@example.com>'
         subject = b'\xc2\xbfEsferificaci\xc3\xb3n?'
