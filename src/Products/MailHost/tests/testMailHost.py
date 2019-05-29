@@ -646,6 +646,18 @@ D=EDt =EFs =E9=E9n test
         mailhost.send(msg, charset='utf-8')
         self.assertEqual(mailhost.sent, msg)
 
+    def test_manage_makeChanges(self):
+        mailhost = self._makeOne('MailHost')
+
+        mailhost.manage_makeChanges(
+            title='MailHost',
+            smtp_host='localhost',
+            smtp_port='25',
+        )
+        self.assertEqual(mailhost.title, 'MailHost')
+        self.assertEqual(mailhost.smtp_host, 'localhost')
+        self.assertEqual(mailhost.smtp_port, 25)
+
 
 class QueueingDummyMailHost(MailHost):
     """Dummy mail host implementation which supports queueing."""
