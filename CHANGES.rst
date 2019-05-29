@@ -4,6 +4,9 @@ Changelog
 4.7 (unreleased)
 ----------------
 
+- Do not start QueueProcessorThread on configuration update.
+  (`#14 <https://github.com/zopefoundation/Products.MailHost/issues/14>`_)
+
 
 4.6 (2019-05-16)
 ----------------
