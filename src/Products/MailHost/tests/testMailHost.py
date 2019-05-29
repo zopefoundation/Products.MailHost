@@ -16,7 +16,6 @@
 from email import message_from_string
 import os.path
 import shutil
-import six
 import tempfile
 import transaction
 import unittest
