@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.13.4 (unreleased)
+2.13.4 (2019-06-03)
 -------------------
 
 - Do not start QueueProcessorThread on configuration update.
