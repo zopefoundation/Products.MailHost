@@ -4,6 +4,9 @@ Changelog
 4.8 (unreleased)
 ----------------
 
+- Fix Flake8 issues.
+  (`#22 <https://github.com/zopefoundation/Products.MailHost/issues/22>`_)
+
 
 4.7 (2019-06-03)
 ----------------

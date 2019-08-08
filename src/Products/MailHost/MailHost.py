@@ -214,7 +214,7 @@ class MailBase(Implicit, Item, RoleManager):
 
     # This is here for backwards compatibility only. Possibly it could
     # be used to send messages at a scheduled future time, or via a mail queue?
-    security.declareProtected(use_mailhost_services,  # NOQA: flake8: D001
+    security.declareProtected(use_mailhost_services,  # noqa: D001
                               'scheduledSend')
     scheduledSend = send
 

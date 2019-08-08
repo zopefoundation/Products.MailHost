@@ -33,7 +33,7 @@ from .dummy import FakeContent
 
 # Appease flake8
 if six.PY2:
-    unicode = unicode  # NOQA: flake8: F821
+    unicode = unicode  # noqa: F821
 else:
     unicode = str
 
