@@ -247,7 +247,7 @@ class MailBase(Implicit, Item, RoleManager):
         if key in queue_threads:
             thread = queue_threads[key]
             thread.stop()
-            while thread.isAlive():
+            while thread.is_alive():
                 # wait until thread is really dead
                 time.sleep(0.3)
             del queue_threads[key]
@@ -283,7 +283,7 @@ class MailBase(Implicit, Item, RoleManager):
         """
         th = queue_threads.get(self._getThreadKey())
         if th:
-            return th.isAlive()
+            return th.is_alive()
         return False
 
     @security.protected(view)
