@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.8 (unreleased)
+4.8 (2020-01-06)
 ----------------
 
 - Show a hint in the ZMI if the delivery queue is forced to queue-only mode
