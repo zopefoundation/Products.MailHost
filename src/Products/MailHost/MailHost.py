@@ -286,6 +286,16 @@ class MailBase(Implicit, Item, RoleManager):
             return th.isAlive()
         return False
 
+    @security.protected(view)
+    def queueNonDeliveryMode(self):
+        """ Return the queue delivery mode as a boolean flag
+
+        Returns:
+            - ``True`` if the queue is in queue-only non-delivery mode
+            - ``False`` if the queue is in active delivery mode
+        """
+        return bool(os.environ.get('MAILHOST_QUEUE_ONLY', None))
+
     @security.protected(change_configuration)
     def manage_restartQueueThread(self, action='start', REQUEST=None):
         """ Restart the queue processor thread """

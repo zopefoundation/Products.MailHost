@@ -4,6 +4,9 @@ Changelog
 4.8 (unreleased)
 ----------------
 
+- Show a hint in the ZMI if the delivery queue is forced to queue-only mode
+  (`#25 <https://github.com/zopefoundation/Products.MailHost/issues/25>`_)
+
 - Improve the asynchronous delivery information on the ZMI Edit tab
   (`#24 <https://github.com/zopefoundation/Products.MailHost/issues/24>`_)
 

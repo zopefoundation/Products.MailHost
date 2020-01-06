@@ -140,6 +140,11 @@
           <dtml-else>
             Stopped
           </dtml-if>
+          <dtml-if queueNonDeliveryMode>
+            <span style="color: red">
+              The processor queue is set to non-delivery mode
+            </span>
+          </dtml-if>
         </div>
       </div>
 
