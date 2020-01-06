@@ -1,11 +1,13 @@
 bin
 dist
 lib
+lib64
 parts
 
 *.pyc
 *.pyo
 .installed.cfg
+*.swp
 default.profraw
 develop-eggs/
 eggs/
@@ -14,3 +16,4 @@ eggs/
 .coverage
 htmlcov/
 coverage.xml
+pyvenv.cfg
