@@ -314,6 +314,11 @@ class MailBase(Implicit, Item, RoleManager):
                 if not os.environ.get('MAILHOST_QUEUE_ONLY', False):
                     self._startQueueProcessorThread()
                 delivery = QueuedMailDelivery(self.smtp_queue_directory)
+
+                # The queued mail delivery breaks if the To address is just
+                # a string. All other delivery mechanisms work fine.
+                if isinstance(mto, str):
+                    mto = [mto]
             else:
                 delivery = DirectMailDelivery(self._makeMailer())
 

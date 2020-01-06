@@ -4,6 +4,9 @@ Changelog
 4.8 (unreleased)
 ----------------
 
+- Fix queued mail delivery with just a single string receiver email
+  (`#26 <https://github.com/zopefoundation/Products.MailHost/issues/26>`_)
+
 - Fix Flake8 issues.
   (`#22 <https://github.com/zopefoundation/Products.MailHost/issues/22>`_)
 
