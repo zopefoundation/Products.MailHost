@@ -100,45 +100,54 @@
       <input class="btn btn-primary" type="submit" name="submit"
              value="Save Changes" />
     </div>
-  
-    <dtml-if smtp_queue>
-        <br />
-        <table class="table-striped">
-          <tr>
-            <td align="left" valign="top">
-            <div class="form-label">
-            Mails in queue <br/> 
-            </div>
-            </td>
-            <td align="left" valign="top">
-              <span class="form-help"><dtml-var queueLength></span>
-            </td>
-          </tr>
-          <tr>
-            <td align="left" valign="top">
-            <div class="form-label">
-            Status of queue processor thread<br/> 
-            </div>
-            </td>
-            <td align="left" valign="top">
-              <div class="form-help">
-                <dtml-if "queueThreadAlive()">
-                    Running
-                    <br/>
-                    <a href="manage_restartQueueThread?action=stop">Stop queue processor thread</a> (this may take some seconds)
-                </dtml-if>
-                <dtml-if "not queueThreadAlive()">
-                    Stopped
-                    <br/>
-                    <a href="manage_restartQueueThread?action=start">Start queue processor thread</a> (this may take some seconds)
-                </dtml-if>
-              </div>
-            </td>
-          </tr>
-        </table>
-    </dtml-if>
-  
+
   </form>
+  
+  <dtml-if smtp_queue>
+
+    <hr />
+
+    <h4>Asynchronous mail queue</h4>
+
+    <form action="manage_restartQueueThread" method="post">
+
+      <div class="form-group row">
+        <label for="queue_size" class="form-label col-sm-3 col-md-2">
+          Queued mails
+        </label>
+        <div class="col-sm-9 col-md-10">
+          <dtml-var queueLength>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="queue_status" class="form-label col-sm-3 col-md-2">
+          Queue processor status
+        </label>
+        <div class="col-sm-9 col-md-10">
+          <dtml-if queueThreadAlive>
+            Running
+          <dtml-else>
+            Stopped
+          </dtml-if>
+        </div>
+      </div>
+
+      <div class="zmi-controls">
+        <dtml-if queueThreadAlive>
+          <input type="hidden" name="action" value="stop"/>
+          <input class="btn btn-primary" type="submit" name="submit"
+                 value="Stop queue processor" />
+        <dtml-else>
+          <input type="hidden" name="action" value="start"/>
+          <input class="btn btn-primary" type="submit" name="submit"
+                 value="Start queue processor" />
+        </dtml-if>
+      </div>
+ 
+    </form>
+
+  </dtml-if>
 
 </main>
 
