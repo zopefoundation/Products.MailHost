@@ -4,6 +4,9 @@ Changelog
 4.8 (unreleased)
 ----------------
 
+- Improve the asynchronous delivery information on the ZMI Edit tab
+  (`#24 <https://github.com/zopefoundation/Products.MailHost/issues/24>`_)
+
 - Fix queued mail delivery with just a single string receiver email
   (`#26 <https://github.com/zopefoundation/Products.MailHost/issues/26>`_)
 

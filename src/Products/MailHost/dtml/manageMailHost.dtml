@@ -3,6 +3,14 @@
 
 <main class="container-fluid">
 
+  <p class="form-help">
+    With asynchronous delivery (recommended for larger sites) email is
+    stored on the file system and delivered by a separate process. The
+    filesystem directory you designate as <em>queue directory</em> should be a
+    <em>Maildir</em> folder if the path already exists, otherwise the directory
+    will be created for you.
+  </p>
+
   <form action="manage_makeChanges" method="post">
   
     <div class="form-group row">
@@ -78,9 +86,6 @@
         <input id="smtp_queue" class="form-check-input" type="checkbox"
                name="smtp_queue:boolean"
                <dtml-if "smtp_queue">checked</dtml-if>>
-        <small>
-          Send email using a separate process and a filesystem queue
-        </small>
       </div>
     </div>
 
@@ -91,8 +96,6 @@
       <div class="col-sm-9 col-md-10">
         <input id="smtp_queue_directory" class="form-control" type="text"
                name="smtp_queue_directory" value="&dtml-smtp_queue_directory;"/>
-        <small>Filesystem queue directory for asynchronous delivery</small>
-        <small class="text-warning">This must be a Maildir folder</small>
       </div>
     </div>
   
@@ -107,7 +110,14 @@
 
     <hr />
 
-    <h4>Asynchronous mail queue</h4>
+    <h4>Asynchronous mail queue at <dtml-var smtp_queue_directory></h4>
+
+    <p class="form-help">
+      You can stop and start the delivery process here. It starts itself
+      automatically when you send email through this MailHost. To prevent it
+      from starting, set the environment variable
+      <em>MAILHOST_QUEUE_ONLY</em> to <em>1</em> before starting Zope.
+    </p>
 
     <form action="manage_restartQueueThread" method="post">
 
