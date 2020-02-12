@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.9 (unreleased)
+4.9 (2020-02-12)
 ----------------
 
 - Fix DeprecationWarnings from ``DocumentTemplate`` with import changes
