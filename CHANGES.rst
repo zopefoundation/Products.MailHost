@@ -4,6 +4,8 @@ Changelog
 4.9 (unreleased)
 ----------------
 
+- Fix DeprecationWarnings from ``DocumentTemplate`` with import changes
+
 
 4.8 (2020-01-06)
 ----------------
