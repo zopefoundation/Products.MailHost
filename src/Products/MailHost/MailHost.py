@@ -51,7 +51,7 @@ from zope.sendmail.maildir import Maildir
 from zope.sendmail.mailer import SMTPMailer
 
 
-queue_threads = {}  # maps MailHost path -> queue processor threada
+queue_threads = {}  # maps MailHost path -> queue processor threads
 
 LOG = logging.getLogger('MailHost')
 
