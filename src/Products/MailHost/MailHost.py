@@ -25,6 +25,7 @@ from email.message import Message
 from email.utils import formataddr
 from email.utils import getaddresses
 from email.utils import parseaddr
+from email.policy import EmailPolicy
 from os.path import realpath
 from threading import Lock
 
@@ -352,24 +353,45 @@ ENCODERS = {
 
 
 def _encode(body, encode=None):
-    """Manually sets an encoding and encodes the message if not
-    already encoded."""
-    if encode is None:
-        return body
+    """
+    Manually sets an encoding and encodes the message if not already encoded.
+
+    If the message already has an encoding header set that does not match the
+    given encoding, an error is raised.
+
+    If there is no encoding header yet but an encoding is given manually, the
+    message is encoded accordingly.
+
+    If the (included or manually set) encoding is 8bit, the message is returned
+    as bytes because otherwise smtplib.sendmail will try to encode it expecting
+    only seven bits.
+    """
     mo = message_from_string(body)
     current_coding = mo['Content-Transfer-Encoding']
-    if current_coding == encode:
-        # already encoded correctly, may have been automated
-        return body
-    if mo['Content-Transfer-Encoding'] not in ['7bit', None]:
+
+    if encode is None:
+        encode = current_coding
+
+    if current_coding and encode != current_coding:
         raise MailHostError('Message already encoded')
-    if encode in ENCODERS:
-        ENCODERS[encode](mo)
-        if not mo['Content-Transfer-Encoding']:
-            mo['Content-Transfer-Encoding'] = encode
-        if not mo['Mime-Version']:
-            mo['Mime-Version'] = '1.0'
-    return mo.as_string()
+
+    if encode:
+        if encode not in ENCODERS:
+            raise MailHostError('Unknown encoding')
+
+        if not current_coding:
+            ENCODERS[encode](mo)
+            if not mo['Content-Transfer-Encoding']:
+                mo['Content-Transfer-Encoding'] = encode
+            if not mo['Mime-Version']:
+                mo['Mime-Version'] = '1.0'
+
+    if encode == '8bit':
+        import pdb
+        pdb.set_trace()
+        return mo.as_bytes(policy=EmailPolicy(cte_type='8bit'))
+    else:
+        return mo.as_string()
 
 
 def _string_transform(text, charset=None):
