@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 # Copyright (c) 2002 Zope Foundation and Contributors.
@@ -692,6 +693,25 @@ class TestMailHostQueuing(unittest.TestCase):
         md = zope.sendmail.maildir.Maildir(self.smtp_queue_directory)
         self.assertEqual(len(list(md)), 1)
 
+    def test_8bit_special(self):
+        mh = self._makeOne('MailHost')
+        mh.send(u"""\
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+ä
+""", 
+                mto='user@example.com',
+                mfrom='zope@example.com',
+                subject='Hello world',
+                charset="utf-8")
+        transaction.commit()
+        self.assertTrue(mh.started_queue_processor_thread)
+        md = zope.sendmail.maildir.Maildir(self.smtp_queue_directory)
+        self.assertEqual(len(list(md)), 1)
+
+        
     def testNotStartQueueProcessorThread(self):
         os.environ['MAILHOST_QUEUE_ONLY'] = '1'
         try:
