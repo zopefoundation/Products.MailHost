@@ -41,14 +41,15 @@ from DateTime.DateTime import DateTime
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from Persistence import Persistent
-from Products.MailHost.decorator import synchronized
-from Products.MailHost.interfaces import IMailHost
 from zope.interface import implementer
 from zope.sendmail.delivery import DirectMailDelivery
 from zope.sendmail.delivery import QueuedMailDelivery
 from zope.sendmail.delivery import QueueProcessorThread
 from zope.sendmail.maildir import Maildir
 from zope.sendmail.mailer import SMTPMailer
+
+from Products.MailHost.decorator import synchronized
+from Products.MailHost.interfaces import IMailHost
 
 
 queue_threads = {}  # maps MailHost path -> queue processor threads
@@ -407,7 +408,7 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
         if isinstance(mto, six.string_types):
             mto = [formataddr(addr) for addr in getaddresses((mto, ))]
         # this violates what is said above (parameters always override)
-        #if not mo.get('To'):
+        # if not mo.get('To'):
         if mto:
             del mo["To"]
             mo['To'] = ', '.join(str(_encode_address_string(e, charset))
@@ -442,17 +443,17 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
         current_coding = mo['Content-Transfer-Encoding']
         if current_coding == encode:
             # already encoded correctly, may have been automated
-            return body
-        if mo['Content-Transfer-Encoding'] not in ['7bit', None]:
+            pass
+        elif mo['Content-Transfer-Encoding'] not in ['7bit', None]:
             raise MailHostError('Message already encoded')
-        if encode in ENCODERS:
+        elif encode in ENCODERS:
             ENCODERS[encode](mo)
             if not mo['Content-Transfer-Encoding']:
                 mo['Content-Transfer-Encoding'] = encode
             if not mo['Mime-Version']:
                 mo['Mime-Version'] = '1.0'
 
-    return mo.as_string(), mto, mfrom
+    return as_bytes(mo), mto, mfrom
 
 
 def _set_recursive_charset(payload, charset=None):
@@ -527,29 +528,27 @@ else:  # Python 3
 
     # work around "https://bugs.python.org/issue41307"
     from copy import copy
+    from email._policybase import Compat32
+    from email.generator import BytesGenerator
+    from email.generator import _has_surrogates
     from functools import partial
     from io import BytesIO
-    from email.message import Message
-    from email.generator import BytesGenerator, _has_surrogates
-    from email._policybase import Compat32
-
 
     class FixedBytesGenerator(BytesGenerator):
         def _handle_text(self, msg):
             payload = msg._payload
             if payload is None:
                 return
-            charset = msg.get_param("charset")
-            if charset is not None \
-                   and not self.policy.cte_type=='7bit' \
-                   and not _has_surrogates(payload):
+            charset = msg.get_param("charset", "utf-8")
+            if (  charset is not None  # noqa: E201
+                  and not self.policy.cte_type == '7bit'
+                  and not _has_surrogates(payload)):
                 msg = copy(msg)
                 msg._payload = payload.encode(charset).decode(
                     "ascii", "surrogateescape")
             super()._handle_text(msg)
 
         _writeBody = _handle_text
-
 
     class FixedMessage(Message):
         def as_bytes(self, unixfrom=False, policy=None):
@@ -559,7 +558,87 @@ else:  # Python 3
             g.flatten(self, unixfrom=unixfrom)
             return fp.getvalue()
 
-
-    fixed_policy = Compat32(message_factory=FixedMessage)
+    if hasattr(Compat32, "message_factory"):
+        fixed_policy = Compat32(message_factory=FixedMessage)
+    else:
+        fixed_policy = Compat32()  # 3.5 -- some tests will fail
 
     message_from_string = partial(message_from_string, policy=fixed_policy)
+
+    # patch ``zope.sendmail.delivery.AbstractMailDelivery.send``
+    #  to let it work with bytes as message
+    from email import message_from_bytes
+
+    import transaction
+    from zope.sendmail.delivery import AbstractMailDelivery
+
+    def send(self, fromaddr, toaddrs, message):
+        to_message = message_from_string if isinstance(message, str) \
+                     else message_from_bytes
+        msg = to_message(message)
+        messageid = msg.get('Message-Id')
+        if messageid:
+            if not messageid.startswith('<') or not messageid.endswith('>'):
+                raise ValueError('Malformed Message-Id header')
+            messageid = messageid[1:-1]
+        else:
+            messageid = self.newMessageId()
+            header = 'Message-Id: <%s>\n' % messageid
+            if isinstance(message, bytes):
+                header = header.encode("ascii")
+            message = header + message
+        transaction.get().join(
+            self.createDataManager(fromaddr, toaddrs, message))
+        return messageid
+
+    AbstractMailDelivery.send = send
+
+    # Patch ``zope.sendmail.queue.QueueProcessorThread``
+    # to treat messages as bytes
+    # from zope.sendmail.queue import QueueProcessorThread
+
+    ori__process_one_file = QueueProcessorThread._process_one_file
+
+    # override ``open`` to let it open in binary mode
+    def binary_open(file):
+        return open(file, "rb")
+
+    pof_globals = ori__process_one_file.__globals__.copy()
+    pof_globals["open"] = binary_open
+
+    QueueProcessorThread._process_one_file = type(ori__process_one_file)(
+        ori__process_one_file.__code__,
+        pof_globals,
+        ori__process_one_file.__name__,
+        ori__process_one_file.__defaults__,
+        ori__process_one_file.__closure__)
+
+    # switch parsing to binary
+    def _parseMessage(self, message):
+        """Extract fromaddr and toaddrs from the first two lines of
+        the `message`.
+
+        Returns a fromaddr string, a toaddrs tuple and the message
+        string.
+        """
+
+        fromaddr = ""
+        toaddrs = ()
+        rest = ""
+
+        try:
+            first, second, rest = message.split(b'\n', 2)
+        except ValueError:
+            return fromaddr, toaddrs, message
+
+        if first.startswith(b"X-Zope-From: "):
+            i = len(b"X-Zope-From: ")
+            fromaddr = first[i:].decode()
+
+        if second.startswith(b"X-Zope-To: "):
+            i = len(b"X-Zope-To: ")
+            toaddrs = tuple(addr.decode() for addr in second[i:].split(b", "))
+
+        return fromaddr, toaddrs, rest
+
+    QueueProcessorThread._parseMessage = _parseMessage
