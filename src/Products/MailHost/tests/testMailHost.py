@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 # Copyright (c) 2002 Zope Foundation and Contributors.
@@ -721,11 +720,11 @@ Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-ä
+\u00e4
 """,
-                mto='user@example.com',
-                mfrom='zope@example.com',
-                subject='Hello world',
+                mto="user@example.com",
+                mfrom="zope@example.com",
+                subject="Hello world",
                 charset="utf-8")
         transaction.commit()
         self.assertTrue(mh.started_queue_processor_thread)

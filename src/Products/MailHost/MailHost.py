@@ -409,7 +409,7 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
         # this violates what is said above (parameters always override)
         # if not mo.get('To'):
         if mto:
-            del mo["To"]
+            del mo['To']
             mo['To'] = ', '.join(str(_encode_address_string(e, charset))
                                  for e in mto)
     else:
@@ -538,13 +538,13 @@ else:  # Python 3
             payload = msg._payload
             if payload is None:
                 return
-            charset = msg.get_param("charset", "utf-8")
+            charset = msg.get_param('charset', 'utf-8')
             if (  charset is not None  # noqa: E201
                   and not self.policy.cte_type == '7bit'
                   and not _has_surrogates(payload)):
                 msg = copy(msg)
                 msg._payload = payload.encode(charset).decode(
-                    "ascii", "surrogateescape")
+                    'ascii', 'surrogateescape')
             super()._handle_text(msg)
 
         _writeBody = _handle_text
@@ -557,7 +557,7 @@ else:  # Python 3
             g.flatten(self, unixfrom=unixfrom)
             return fp.getvalue()
 
-    if hasattr(Compat32, "message_factory"):
+    if hasattr(Compat32, 'message_factory'):
         fixed_policy = Compat32(message_factory=FixedMessage)
     else:
         fixed_policy = Compat32()  # 3.5 -- some tests will fail
@@ -584,7 +584,7 @@ else:  # Python 3
             messageid = self.newMessageId()
             header = 'Message-Id: <%s>\n' % messageid
             if isinstance(message, bytes):
-                header = header.encode("ascii")
+                header = header.encode('ascii')
             message = header + message
         transaction.get().join(
             self.createDataManager(fromaddr, toaddrs, message))
@@ -600,10 +600,10 @@ else:  # Python 3
 
     # override ``open`` to let it open in binary mode
     def binary_open(file):
-        return open(file, "rb")
+        return open(file, 'rb')
 
     pof_globals = ori__process_one_file.__globals__.copy()
-    pof_globals["open"] = binary_open
+    pof_globals['open'] = binary_open
 
     QueueProcessorThread._process_one_file = type(ori__process_one_file)(
         ori__process_one_file.__code__,
@@ -621,22 +621,22 @@ else:  # Python 3
         string.
         """
 
-        fromaddr = ""
+        fromaddr = ''
         toaddrs = ()
-        rest = ""
+        rest = ''
 
         try:
             first, second, rest = message.split(b'\n', 2)
         except ValueError:
             return fromaddr, toaddrs, message
 
-        if first.startswith(b"X-Zope-From: "):
-            i = len(b"X-Zope-From: ")
+        if first.startswith(b'X-Zope-From: '):
+            i = len(b'X-Zope-From: ')
             fromaddr = first[i:].decode()
 
-        if second.startswith(b"X-Zope-To: "):
-            i = len(b"X-Zope-To: ")
-            toaddrs = tuple(addr.decode() for addr in second[i:].split(b", "))
+        if second.startswith(b'X-Zope-To: '):
+            i = len(b'X-Zope-To: ')
+            toaddrs = tuple(addr.decode() for addr in second[i:].split(b', '))
 
         return fromaddr, toaddrs, rest
 
