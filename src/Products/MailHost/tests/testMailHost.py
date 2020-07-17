@@ -16,6 +16,7 @@
 
 import os.path
 import shutil
+import sys
 import tempfile
 import unittest
 from email import message_from_string
@@ -40,6 +41,8 @@ else:
     unicode = str
     from email import message_from_bytes
     parse_message = message_from_bytes
+
+PY36 = sys.version_info[0:2] >= (3, 6)
 
 
 class TestMailHost(unittest.TestCase):
@@ -510,6 +513,7 @@ Mime-Version: 1.0
 
 A Message""")
 
+    @unittest.skipUnless(PY36, "requires Python 3.6+")
     def testExplicit8bitEncoding(self):
         mailhost = self._makeOne('MailHost')
         # We pass an encoded string with unspecified charset, it should be
@@ -709,6 +713,7 @@ class TestMailHostQueuing(unittest.TestCase):
         md = zope.sendmail.maildir.Maildir(self.smtp_queue_directory)
         self.assertEqual(len(list(md)), 1)
 
+    @unittest.skipUnless(PY36, "requires Python 3.6+")
     def test_8bit_special(self):
         mh = self._makeOne('MailHost')
         mh.send(u"""\
