@@ -512,7 +512,7 @@ Mime-Version: 1.0
 
 A Message""")
 
-    @unittest.skipUnless(PY36, "requires Python 3.6+")
+    @unittest.skipUnless(PY36, 'requires Python 3.6+')
     def testExplicit8bitEncoding(self):
         mailhost = self._makeOne('MailHost')
         # We pass an encoded string with unspecified charset, it should be
@@ -712,7 +712,7 @@ class TestMailHostQueuing(unittest.TestCase):
         md = zope.sendmail.maildir.Maildir(self.smtp_queue_directory)
         self.assertEqual(len(list(md)), 1)
 
-    @unittest.skipUnless(PY36, "requires Python 3.6+")
+    @unittest.skipUnless(PY36, 'requires Python 3.6+')
     def test_8bit_special(self):
         mh = self._makeOne('MailHost')
         mh.send(u"""\
@@ -722,10 +722,10 @@ Content-Transfer-Encoding: 8bit
 
 \u00e4
 """,
-                mto="user@example.com",
-                mfrom="zope@example.com",
-                subject="Hello world",
-                charset="utf-8")
+                mto='user@example.com',
+                mfrom='zope@example.com',
+                subject='Hello world',
+                charset='utf-8')
         transaction.commit()
         self.assertTrue(mh.started_queue_processor_thread)
         md = zope.sendmail.maildir.Maildir(self.smtp_queue_directory)
