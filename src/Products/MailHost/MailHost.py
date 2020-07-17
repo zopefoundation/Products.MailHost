@@ -41,15 +41,14 @@ from DateTime.DateTime import DateTime
 from OFS.role import RoleManager
 from OFS.SimpleItem import Item
 from Persistence import Persistent
+from Products.MailHost.decorator import synchronized
+from Products.MailHost.interfaces import IMailHost
 from zope.interface import implementer
 from zope.sendmail.delivery import DirectMailDelivery
 from zope.sendmail.delivery import QueuedMailDelivery
 from zope.sendmail.delivery import QueueProcessorThread
 from zope.sendmail.maildir import Maildir
 from zope.sendmail.mailer import SMTPMailer
-
-from Products.MailHost.decorator import synchronized
-from Products.MailHost.interfaces import IMailHost
 
 
 queue_threads = {}  # maps MailHost path -> queue processor threads

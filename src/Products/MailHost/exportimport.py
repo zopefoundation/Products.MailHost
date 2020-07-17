@@ -15,11 +15,10 @@
 
 import six
 
-from zope.component import adapts
-
 from Products.GenericSetup.interfaces import ISetupEnviron
 from Products.GenericSetup.utils import XMLAdapterBase
 from Products.MailHost.interfaces import IMailHost
+from zope.component import adapts
 
 
 class MailHostXMLAdapter(XMLAdapterBase):
