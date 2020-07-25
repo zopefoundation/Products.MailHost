@@ -19,6 +19,8 @@ import sys
 import tempfile
 import unittest
 from email import message_from_string
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 import six
 
@@ -479,6 +481,49 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
         self.assertEqual(out['Subject'], '=?utf-8?q?Changed!?=')
         self.assertEqual(msg['Subject'],
                          '=?utf-8?q?=C2=BFEsferificaci=C3=B3n=3F?=')
+
+    def testSendMultipartMessageObject(self):
+        TO = 'Name, Nick <recipient@example.com>'
+        FROM = 'sender@example.com'
+
+        outer = MIMEMultipart()
+        outer['Subject'] = 'This is the subject'
+        outer['To'] = TO
+        outer['From'] = FROM
+        outer.preamble = 'This is a MIME encoded multipart message.\n'
+        outer.epilogue = ''
+        body = 'This is the message body.'
+        msg = MIMEText(body, _subtype='text', _charset='utf-8')
+        outer.attach(msg)
+        outer.set_boundary('===============8011890429167670482==')
+
+        mailhost = self._makeOne('MailHost')
+        mailhost.send(
+            outer.as_string(),
+            mto=TO,
+            mfrom=FROM,
+        )
+        # date_pattern matches e.g. `Tue, 21 Jul 2020 08:50:04 +0200`
+        date_pattern = b'[a-zA-Z]{2,3}, [0-9]{1,2} [a-zA-Z]{3} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} [+-]{1}[0-9]{4}'  # noqa: E501
+        pattern = (
+            b'Content-Type: multipart/mixed; '
+            b'boundary="===============8011890429167670482=="\n'
+            b'MIME-Version: 1.0\n'
+            b'Subject: This is the subject\n'
+            b'To: Name, Nick <recipient@example.com>\n'
+            b'From: sender@example.com\n'
+            b'Date: %s\n\n'
+            b'This is a MIME encoded multipart message.\n\n'
+            b'--===============8011890429167670482==\n'
+            b'Content-Type: text/text; charset="utf-8"\n'
+            b'MIME-Version: 1.0\n'
+            b'Content-Transfer-Encoding: quoted-printable\n\n'
+            b'This is the message body.\n'
+            b'--===============8011890429167670482==--\n' % date_pattern)  # noqa: E501
+        if six.PY2:
+            self.assertRegexpMatches(mailhost.sent, pattern)
+        else:  # PY3
+            self.assertRegex(mailhost.sent, pattern)
 
     def testExplicitBase64Encoding(self):
         mailhost = self._makeOne('MailHost')
