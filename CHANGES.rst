@@ -4,6 +4,9 @@ Changelog
 4.10 (unreleased)
 -----------------
 
+- Temporarily depend on ``zope.sendmail`` checkout (--> ``buildout.cfg``)
+  (until a new ``zope.sendmail`` release is available)
+
 - Support messages with explicit ``Content-Transfer-Encoding: 8bit``
   (`#30 <https://github.com/zopefoundation/Products.MailHost/issues/30>`_)
   
