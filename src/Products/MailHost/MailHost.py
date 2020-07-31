@@ -370,9 +370,12 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
     """Sets missing message headers, and deletes Bcc.
        returns fixed message, fixed mto and fixed mfrom.
 
-       *messageText* can be either a ``Message`` or have
+       *messageText* can be either a ``Message`` or a
+       string representation for a message.
+       In the latter case, the representation is converted to
+       a native string using *charset*, if necessary, and then
+       parsed into a ``Message`` object.
     """
-    messageText = _string_transform(messageText, charset)
     mto = _string_transform(mto, charset)
     mfrom = _string_transform(mfrom, charset)
     subject = _string_transform(subject, charset)
