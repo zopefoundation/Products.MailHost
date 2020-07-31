@@ -69,7 +69,7 @@ setup(
         'Zope >= 4.0b4',
         'zope.deferredimport',
         'zope.interface',
-        'zope.sendmail >= 5',
+        'zope.sendmail >= 5.1',
     ],
     extras_require={
         'genericsetup': ['Products.GenericSetup >= 2.0b1'],
