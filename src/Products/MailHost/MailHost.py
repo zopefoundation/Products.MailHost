@@ -203,14 +203,15 @@ class MailBase(Implicit, Item, RoleManager):
              immediate=False,
              charset=None,
              msg_type=None):
-        messageText, mto, mfrom = _mungeHeaders(messageText, mto, mfrom,
-                                                subject, charset, msg_type)
-        # This encode step is mainly for BBB, encoding should be
-        # automatic if charset is passed.  The automated charset-based
-        # encoding will be preferred if both encode and charset are
-        # provided.
-        messageText = _encode(messageText, encode)
-        self._send(mfrom, mto, messageText, immediate)
+        """send *messageText* modified by the other parameters.
+
+        *messageText* can either be an ``email.message.Message``
+        or a string.
+        """
+        msg, mto, mfrom = _mungeHeaders(messageText, mto, mfrom,
+                                        subject, charset, msg_type,
+                                        encode)
+        self._send(mfrom, mto, msg, immediate)
 
     # This is here for backwards compatibility only. Possibly it could
     # be used to send messages at a scheduled future time, or via a mail queue?
@@ -351,28 +352,8 @@ ENCODERS = {
 }
 
 
-def _encode(body, encode=None):
-    """Manually sets an encoding and encodes the message if not
-    already encoded."""
-    if encode is None:
-        return body
-    mo = message_from_string(body)
-    current_coding = mo['Content-Transfer-Encoding']
-    if current_coding == encode:
-        # already encoded correctly, may have been automated
-        return body
-    if mo['Content-Transfer-Encoding'] not in ['7bit', None]:
-        raise MailHostError('Message already encoded')
-    if encode in ENCODERS:
-        ENCODERS[encode](mo)
-        if not mo['Content-Transfer-Encoding']:
-            mo['Content-Transfer-Encoding'] = encode
-        if not mo['Mime-Version']:
-            mo['Mime-Version'] = '1.0'
-    return mo.as_string()
-
-
 def _string_transform(text, charset=None):
+    """converts *text* to a native string."""
     if six.PY2 and isinstance(text, six.text_type):
         # Unicode under Python 2
         return _try_encode(text, charset)
@@ -385,10 +366,16 @@ def _string_transform(text, charset=None):
 
 
 def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
-                  charset=None, msg_type=None):
+                  charset=None, msg_type=None, encode=None):
     """Sets missing message headers, and deletes Bcc.
-       returns fixed message, fixed mto and fixed mfrom"""
-    messageText = _string_transform(messageText, charset)
+       returns fixed message, fixed mto and fixed mfrom.
+
+       *messageText* can be either a ``Message`` or a
+       string representation for a message.
+       In the latter case, the representation is converted to
+       a native string using *charset*, if necessary, and then
+       parsed into a ``Message`` object.
+    """
     mto = _string_transform(mto, charset)
     mfrom = _string_transform(mfrom, charset)
     subject = _string_transform(subject, charset)
@@ -398,7 +385,7 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
         mo = deepcopy(messageText)
     else:
         # Otherwise parse the input message
-        mo = message_from_string(messageText)
+        mo = message_from_string(_string_transform(messageText, charset))
 
     if msg_type and not mo.get('Content-Type'):
         # we don't use get_content_type because that has a default
@@ -422,7 +409,10 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
     if mto:
         if isinstance(mto, six.string_types):
             mto = [formataddr(addr) for addr in getaddresses((mto, ))]
-        if not mo.get('To'):
+        # this violates what is said above (parameters always override)
+        # if not mo.get('To'):
+        if mto:
+            del mo['To']
             mo['To'] = ', '.join(str(_encode_address_string(e, charset))
                                  for e in mto)
     else:
@@ -451,7 +441,21 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
     if not mo.get('Date'):
         mo['Date'] = DateTime().rfc822()
 
-    return mo.as_string(), mto, mfrom
+    if encode:
+        current_coding = mo['Content-Transfer-Encoding']
+        if current_coding == encode:
+            # already encoded correctly, may have been automated
+            pass
+        elif mo['Content-Transfer-Encoding'] not in ['7bit', None]:
+            raise MailHostError('Message already encoded')
+        elif encode in ENCODERS:
+            ENCODERS[encode](mo)
+            if not mo['Content-Transfer-Encoding']:
+                mo['Content-Transfer-Encoding'] = encode
+            if not mo['Mime-Version']:
+                mo['Mime-Version'] = '1.0'
+
+    return as_bytes(mo), mto, mfrom
 
 
 def _set_recursive_charset(payload, charset=None):
@@ -515,3 +519,50 @@ def _encode_address_string(text, charset):
     # We again replace rather than raise an error or pass an 8bit string
     header.append(formataddr((name, addr)), errors='replace')
     return header
+
+
+if six.PY2:
+    def as_bytes(msg):
+        return msg.as_string()
+else:  # Python 3
+    def as_bytes(msg):
+        return msg.as_bytes()
+
+    # work around "https://bugs.python.org/issue41307"
+    from copy import copy
+    from email._policybase import Compat32
+    from email.generator import BytesGenerator
+    from email.generator import _has_surrogates
+    from functools import partial
+    from io import BytesIO
+
+    class FixedBytesGenerator(BytesGenerator):
+        def _handle_text(self, msg):
+            payload = msg._payload
+            if payload is None:
+                return
+            charset = msg.get_param('charset', 'utf-8')
+            if (  charset is not None  # noqa: E201
+                  and not self.policy.cte_type == '7bit'
+                  and not _has_surrogates(payload)):
+                msg = copy(msg)
+                msg._payload = payload.encode(charset).decode(
+                    'ascii', 'surrogateescape')
+            super()._handle_text(msg)
+
+        _writeBody = _handle_text
+
+    class FixedMessage(Message):
+        def as_bytes(self, unixfrom=False, policy=None):
+            policy = self.policy if policy is None else policy
+            fp = BytesIO()
+            g = FixedBytesGenerator(fp, mangle_from_=False, policy=policy)
+            g.flatten(self, unixfrom=unixfrom)
+            return fp.getvalue()
+
+    if hasattr(Compat32, 'message_factory'):
+        fixed_policy = Compat32(message_factory=FixedMessage)
+    else:
+        fixed_policy = Compat32()  # 3.5 -- some tests will fail
+
+    message_from_string = partial(message_from_string, policy=fixed_policy)

@@ -74,9 +74,9 @@ class SendMailTagTests(unittest.TestCase):
                             '</dtml-sendmail>'))
         self.app.testing(client=self.app)
         self.assertEqual(self.app.MailHost.sent,
-                         ('To: person@their.machine.com\n'
-                          'From: me@mymachine.net\n'
-                          'Subject: just called to say...\n'
-                          'Date: Thu, 16 May 2019 16:04:14 -0500\n'
-                          '\n'
-                          'boy howdy!\n'))
+                         (b'To: person@their.machine.com\n'
+                          b'From: me@mymachine.net\n'
+                          b'Subject: just called to say...\n'
+                          b'Date: Thu, 16 May 2019 16:04:14 -0500\n'
+                          b'\n'
+                          b'boy howdy!\n'))

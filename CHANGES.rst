@@ -4,6 +4,12 @@ Changelog
 4.10 (unreleased)
 -----------------
 
+- We depend on ``zope.sendmail >= 5.1``.
+
+- Support messages with explicit ``Content-Transfer-Encoding: 8bit``
+  (`#30 <https://github.com/zopefoundation/Products.MailHost/issues/30>`_).
+  
+
 
 4.9 (2020-02-12)
 ----------------
