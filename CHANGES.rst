@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.10 (unreleased)
+4.10 (2020-07-31)
 -----------------
 
 - We depend on ``zope.sendmail >= 5.1``.
