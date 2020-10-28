@@ -1,5 +1,5 @@
-.. image:: https://api.travis-ci.org/zopefoundation/Products.MailHost.svg?branch=master
-   :target: https://travis-ci.org/zopefoundation/Products.MailHost
+.. image:: https://api.travis-ci.com/zopefoundation/Products.MailHost.svg?branch=master
+   :target: https://travis-ci.com/zopefoundation/Products.MailHost
 
 .. image:: https://coveralls.io/repos/github/zopefoundation/Products.MailHost/badge.svg?branch=master
    :target: https://coveralls.io/github/zopefoundation/Products.MailHost?branch=master
