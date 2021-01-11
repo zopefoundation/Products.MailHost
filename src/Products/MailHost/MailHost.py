@@ -531,6 +531,7 @@ else:  # Python 3
     # work around "https://bugs.python.org/issue41307"
     from copy import copy
     from email._policybase import Compat32
+    from email import policy
     from email.generator import BytesGenerator
     from email.generator import _has_surrogates
     from functools import partial
@@ -560,9 +561,9 @@ else:  # Python 3
             g.flatten(self, unixfrom=unixfrom)
             return fp.getvalue()
 
-    if hasattr(Compat32, 'message_factory'):
-        fixed_policy = Compat32(message_factory=FixedMessage)
+    if hasattr(Compat32, 'message_factory'):        
+        fixed_policy = policy.compat32.clone(linesep='\r\n', message_factory=FixedMessage)
     else:
-        fixed_policy = Compat32()  # 3.5 -- some tests will fail
+        fixed_policy = policy.compat32.clone(linesep='\r\n')
 
     message_from_string = partial(message_from_string, policy=fixed_policy)
