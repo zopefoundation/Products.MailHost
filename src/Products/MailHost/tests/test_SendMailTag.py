@@ -79,4 +79,4 @@ class SendMailTagTests(unittest.TestCase):
                           b'Subject: just called to say...\n'
                           b'Date: Thu, 16 May 2019 16:04:14 -0500\n'
                           b'\n'
-                          b'boy howdy!\n').replace(b"\n",b"\r\n"))
+                          b'boy howdy!\n').replace(b"\n", b"\r\n"))

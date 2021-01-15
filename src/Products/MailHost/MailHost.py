@@ -543,9 +543,9 @@ else:  # Python 3
             if payload is None:
                 return
             charset = msg.get_param('charset', 'utf-8')
-            if (  charset is not None  # noqa: E201
-                  and not self.policy.cte_type == '7bit'
-                  and not _has_surrogates(payload)):
+            if (charset is not None
+                    and not self.policy.cte_type == '7bit'
+                    and not _has_surrogates(payload)):
                 msg = copy(msg)
                 msg._payload = payload.encode(charset).decode(
                     'ascii', 'surrogateescape')
@@ -561,8 +561,9 @@ else:  # Python 3
             g.flatten(self, unixfrom=unixfrom)
             return fp.getvalue()
 
-    if hasattr(Compat32, 'message_factory'):        
-        fixed_policy = policy.compat32.clone(linesep='\r\n', message_factory=FixedMessage)
+    if hasattr(Compat32, 'message_factory'):
+        fixed_policy = policy.compat32.clone(
+            linesep='\r\n', message_factory=FixedMessage)
     else:
         fixed_policy = policy.compat32.clone(linesep='\r\n')
 
