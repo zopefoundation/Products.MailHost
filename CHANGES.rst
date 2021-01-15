@@ -4,7 +4,8 @@ Changelog
 4.11 (unreleased)
 -----------------
 
-- Use standard conforming ``\r\n`` line endings. This may require adaptations in testsSupport messages with line separation `\r\n`
+- Use standard conforming ``\r\n`` line endings.
+  This may require adaptations in testsSupport messages with line separation ``\r\n``
   (`#35 <https://github.com/zopefoundation/Products.MailHost/issues/35>`_).
 
 
