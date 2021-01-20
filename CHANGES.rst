@@ -8,8 +8,6 @@ Changelog
   This may require adaptations in testsSupport messages with line separation ``\r\n``
   (`#35 <https://github.com/zopefoundation/Products.MailHost/issues/35>`_).
 
-- Bugfix Tests
-  (`#37 <https://github.com/zopefoundation/Products.MailHost/issues/37>`_).
 
 
 4.10 (2020-07-31)
