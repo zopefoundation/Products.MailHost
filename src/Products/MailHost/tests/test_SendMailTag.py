@@ -13,6 +13,7 @@
 """SendMailTag unit tests.
 """
 
+
 import unittest
 
 from OFS.DTMLMethod import addDTMLMethod
@@ -63,6 +64,7 @@ class SendMailTagTests(unittest.TestCase):
         self.assertEqual(tag.port, 1025)
 
     def test_dtml_var(self):
+        import six
         addDTMLMethod(self.app, 'testing',
                       file=('<dtml-sendmail mailhost="MailHost">'
                             'To: person@their.machine.com\n'
@@ -73,10 +75,15 @@ class SendMailTagTests(unittest.TestCase):
                             'boy howdy!\n'
                             '</dtml-sendmail>'))
         self.app.testing(client=self.app)
-        self.assertEqual(self.app.MailHost.sent,
-                         (b'To: person@their.machine.com\n'
-                          b'From: me@mymachine.net\n'
-                          b'Subject: just called to say...\n'
-                          b'Date: Thu, 16 May 2019 16:04:14 -0500\n'
-                          b'\n'
-                          b'boy howdy!\n').replace(b"\n", b"\r\n"))
+        outmsg = self.app.MailHost.sent
+        inmsg = (b'To: person@their.machine.com\n'
+                 b'From: me@mymachine.net\n'
+                 b'Subject: just called to say...\n'
+                 b'Date: Thu, 16 May 2019 16:04:14 -0500\n'
+                 b'\n'
+                 b'boy howdy!\n')
+
+        if six.PY3:
+            inmsg = inmsg.replace(b"\n", b"\r\n")
+
+        self.assertEqual(outmsg, inmsg)

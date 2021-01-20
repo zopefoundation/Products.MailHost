@@ -3,6 +3,7 @@ dist
 lib
 lib64
 parts
+share
 
 *.pyc
 *.pyo
@@ -17,3 +18,4 @@ eggs/
 htmlcov/
 coverage.xml
 pyvenv.cfg
+.python-version
