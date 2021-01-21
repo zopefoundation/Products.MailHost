@@ -27,6 +27,7 @@ testenv-commands = [
 
 [manifest]
 additional-rules = [
+    "include buildout4.cfg",
     "recursive-include src *.dtml",
     "recursive-include src *.gif",
     ]
