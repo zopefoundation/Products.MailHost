@@ -17,7 +17,8 @@ tox-ini-command = "coverage run {envbindir}/test_with_gs {posargs:-cv}"
 
 [tox]
 testenv-commands-pre = [
-    "{envbindir}/buildout -c {toxinidir}/buildout.cfg buildout:directory={envdir} buildout:develop={toxinidir} install test test_with_gs",
+    "py27,py35: {envbindir}/buildout -nc {toxinidir}/buildout4.cfg buildout:directory={envdir} buildout:develop={toxinidir} install test test_with_gs",
+    "!py27-!py35: {envbindir}/buildout -nc {toxinidir}/buildout.cfg buildout:directory={envdir} buildout:develop={toxinidir} install test test_with_gs",
     ]
 testenv-commands = [
     "{envbindir}/test {posargs:-cv}",
