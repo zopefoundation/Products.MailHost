@@ -1,0 +1,30 @@
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/zope-product
+[meta]
+template = "zope-product"
+commit-id = "46dc5edbd23960df8baf14457e335044ccc15c43"
+
+[python]
+with-appveyor = false
+with-pypy = false
+with-legacy-python = true
+with-docs = false
+with-sphinx-doctests = false
+
+[coverage]
+fail-under = 83
+tox-ini-command = "coverage run {envbindir}/test_with_gs {posargs:-cv}"
+
+[tox]
+testenv-commands-pre = [
+    "{envbindir}/buildout -c {toxinidir}/buildout.cfg buildout:directory={envdir} buildout:develop={toxinidir} install test test_with_gs",
+    ]
+
+[manifest]
+additional-rules = [
+    "recursive-include src *.dtml",
+    "recursive-include src *.gif",
+    ]
+
+[isort]
+known_first_party = "Products.GenericSetup"
