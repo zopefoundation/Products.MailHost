@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.11 (unreleased)
+4.11 (2021-01-21)
 -----------------
 
 - Use standard conforming ``\r\n`` line endings.
