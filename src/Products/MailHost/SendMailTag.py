@@ -14,6 +14,7 @@
 from DocumentTemplate._DocumentTemplate import render_blocks
 from DocumentTemplate.DT_String import String
 from DocumentTemplate.DT_Util import parse_params
+
 from Products.MailHost.MailHost import MailBase
 from Products.MailHost.MailHost import MailHostError
 
