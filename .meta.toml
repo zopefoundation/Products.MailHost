@@ -1,0 +1,36 @@
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/zope-product
+[meta]
+template = "zope-product"
+commit-id = "8aa79d6c1f088715e2c4f06f47da3f531d794d60"
+
+[python]
+with-appveyor = false
+with-pypy = false
+with-legacy-python = true
+with-docs = false
+with-sphinx-doctests = false
+
+[coverage]
+fail-under = 83
+
+[tox]
+testenv-commands-pre = [
+    "py27,py35: {envbindir}/buildout -nc {toxinidir}/buildout4.cfg buildout:directory={envdir} buildout:develop={toxinidir} install test test_with_gs",
+    "!py27-!py35: {envbindir}/buildout -nc {toxinidir}/buildout.cfg buildout:directory={envdir} buildout:develop={toxinidir} install test test_with_gs",
+    ]
+testenv-commands = [
+    "{envbindir}/test {posargs:-cv}",
+    "{envbindir}/test_with_gs {posargs:-cv}",
+    ]
+coverage-command = "coverage run {envbindir}/test_with_gs {posargs:-cv}"
+
+[manifest]
+additional-rules = [
+    "include buildout4.cfg",
+    "recursive-include src *.dtml",
+    "recursive-include src *.gif",
+    ]
+
+[isort]
+known_first_party = "Products.GenericSetup"

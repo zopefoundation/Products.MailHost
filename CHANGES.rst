@@ -4,7 +4,7 @@ Changelog
 4.12 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Add support for Python 3.9.
 
 
 4.11 (2021-01-21)
@@ -15,7 +15,6 @@ Changelog
   (`#35 <https://github.com/zopefoundation/Products.MailHost/issues/35>`_).
 
 
-
 4.10 (2020-07-31)
 -----------------
 
@@ -23,7 +22,6 @@ Changelog
 
 - Support messages with explicit ``Content-Transfer-Encoding: 8bit``
   (`#30 <https://github.com/zopefoundation/Products.MailHost/issues/30>`_).
-  
 
 
 4.9 (2020-02-12)
