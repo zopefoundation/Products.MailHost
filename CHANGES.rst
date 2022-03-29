@@ -4,7 +4,7 @@ Changelog
 4.12 (unreleased)
 -----------------
 
-- Add support for Python 3.9.
+- Add support for Python 3.9 and 3.10.
 
 
 4.11 (2021-01-21)
