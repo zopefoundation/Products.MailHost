@@ -23,7 +23,7 @@ def _read(fname):
 
 setup(
     name='Products.MailHost',
-    version='4.13.dev0',
+    version='4.13',
     url='https://github.com/zopefoundation/Products.MailHost',
     project_urls={
         'Issue Tracker': ('https://github.com/zopefoundation'
@@ -56,6 +56,7 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Communications :: Email',
     ],
