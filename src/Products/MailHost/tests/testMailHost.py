@@ -15,14 +15,12 @@
 
 import os.path
 import shutil
-import sys
 import tempfile
 import unittest
+from email import message_from_bytes
 from email import message_from_string
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
-import six
 
 import transaction
 import zope.sendmail.maildir
@@ -32,18 +30,6 @@ from ..MailHost import MailHostError
 from ..MailHost import _mungeHeaders
 from .dummy import DummyMailHost
 from .dummy import FakeContent
-
-
-# Appease flake8
-if six.PY2:
-    unicode = unicode  # noqa: F821
-    parse_message = message_from_string
-else:
-    unicode = str
-    from email import message_from_bytes
-    parse_message = message_from_bytes
-
-PY36 = sys.version_info[0:2] >= (3, 6)
 
 
 class TestMailHost(unittest.TestCase):
@@ -168,8 +154,7 @@ This is the message body."""
 
         mailhost = self._makeOne('MailHost')
         mailhost.send(msg)
-        if six.PY3:
-            msg = msg.encode().replace(b"\n", b"\r\n")
+        msg = msg.encode().replace(b"\n", b"\r\n")
         self.assertEqual(mailhost.sent, msg)
 
     def testSendWithArguments(self):
@@ -193,8 +178,7 @@ This is the message body."""
                       mfrom='sender@example.com',
                       subject='This is the subject')
 
-        if six.PY3:
-            outmsg = outmsg.replace(b"\n", b"\r\n")
+        outmsg = outmsg.replace(b"\n", b"\r\n")
 
         self.assertEqual(mailhost.sent, outmsg)
 
@@ -219,8 +203,7 @@ This is the message body."""
                       mfrom='sender@example.com',
                       subject='This is the subject')
 
-        if six.PY3:
-            outmsg = outmsg.replace(b"\n", b"\r\n")
+        outmsg = outmsg.replace(b"\n", b"\r\n")
 
         self.assertEqual(mailhost.sent, outmsg)
 
@@ -270,7 +253,7 @@ This is the message body."""
                           '"Foo Bar" <foo@example.com>',
                       mfrom='sender@example.com',
                       subject='This is the subject')
-        out = parse_message(mailhost.sent)
+        out = message_from_bytes(mailhost.sent)
         self.assertEqual(out.get_payload(), msg)
         self.assertEqual(
             out['To'],
@@ -291,7 +274,7 @@ This is the message body."""
                       mfrom='sender@example.com',
                       subject='This is the subject',
                       charset='utf-8')
-        out = parse_message(mailhost.sent)
+        out = message_from_bytes(mailhost.sent)
         self.assertEqual(
             out['To'],
             '"Name, Nick" <recipient@example.com>, Foo Bar <foo@example.com>')
@@ -313,7 +296,7 @@ This is the message body."""
         mailhost = self._makeOne('MailHost')
         mailhost.send(messageText='A message.', mto=mto, mfrom=mfrom,
                       subject=subject, charset='utf-8')
-        out = parse_message(mailhost.sent)
+        out = message_from_bytes(mailhost.sent)
         self.assertEqual(
             out['To'],
             '=?utf-8?q?Ferran_Adri=C3=A0?= <ferran@example.com>')
@@ -348,8 +331,7 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
         mailhost = self._makeOne('MailHost')
         mailhost.send(messageText=msg)
         outmsg = msg
-        if six.PY3:
-            outmsg = outmsg.encode().replace(b"\n", b"\r\n")
+        outmsg = outmsg.encode().replace(b"\n", b"\r\n")
         self.assertEqual(mailhost.sent, outmsg)
         mailhost.send(messageText=msg, msg_type='text/plain')
         # The msg_type is ignored if already set
@@ -379,7 +361,7 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
         # The charset for the body should remain the same, but any
         # headers passed into the method will be encoded using the
         # specified charset
-        out = parse_message(mailhost.sent)
+        out = message_from_bytes(mailhost.sent)
         self.assertEqual(out['Content-Type'], 'text/html; charset="utf-8"')
         self.assertEqual(out['Content-Transfer-Encoding'], 'base64')
         # Headers set by parameter will be set using charset parameter
@@ -390,59 +372,19 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
             out['From'],
             '=?utf-8?q?Jos=C3=A9_Andr=C3=A9s?= <jose@example.com>')
 
-    @unittest.skipIf(six.PY3, 'Test not applicable on Python 3.')
-    def testUnicodeMessage(self):
-        # unicode messages and headers are decoded using the given charset
-        msg = unicode("Here's some unencoded <strong>t\xc3\xa9xt</strong>.",
-                      'utf-8')
-        mfrom = unicode('Ferran Adri\xc3\xa0 <ferran@example.com>', 'utf-8')
-        subject = unicode('\xc2\xa1Andr\xc3\xa9s!', 'utf-8')
-        mailhost = self._makeOne('MailHost')
-        mailhost.send(messageText=msg,
-                      mto='"Name, Nick" <recipient@example.com>',
-                      mfrom=mfrom, subject=subject, charset='utf-8',
-                      msg_type='text/html')
-        out = parse_message(mailhost.sent)
-        self.assertEqual(
-            out['To'], '"Name, Nick" <recipient@example.com>')
-        self.assertEqual(
-            out['From'],
-            '=?utf-8?q?Ferran_Adri=C3=A0?= <ferran@example.com>')
-        self.assertEqual(out['Subject'], '=?utf-8?q?=C2=A1Andr=C3=A9s!?=')
-        self.assertEqual(out['Content-Transfer-Encoding'],
-                         'quoted-printable')
-        self.assertEqual(out['Content-Type'], 'text/html; charset="utf-8"')
-        self.assertEqual(
-            out.get_payload(),
-            "Here's some unencoded <strong>t=C3=A9xt</strong>.")
-
-    @unittest.skipIf(six.PY3, 'Test not applicable on Python 3.')
-    def testUnicodeNoEncodingErrors(self):
-        # Unicode messages and headers raise errors if no charset is passed to
-        # send
-        msg = unicode("Here's some unencoded <strong>t\xc3\xa9xt</strong>.",
-                      'utf-8')
-        subject = unicode('\xc2\xa1Andr\xc3\xa9s!', 'utf-8')
-        mailhost = self._makeOne('MailHost')
-        self.assertRaises(UnicodeEncodeError,
-                          mailhost.send, msg,
-                          mto='"Name, Nick" <recipient@example.com>',
-                          mfrom='Foo Bar <foo@example.com>',
-                          subject=subject)
-
     def testUnicodeDefaultEncoding(self):
         # However if we pass unicode that can be encoded to the
         # default encoding (generally 'us-ascii'), no error is raised.
         # We include a date in the messageText to make inspecting the
         # results more convenient.
-        msg = u"""\
+        msg = """\
 Date: Sun, 27 Aug 2006 17:00:00 +0200
 
 Here's some unencoded <strong>text</strong>."""
-        subject = u'Andres!'
+        subject = 'Andres!'
         mailhost = self._makeOne('MailHost')
-        mailhost.send(msg, mto=u'"Name, Nick" <recipient@example.com>',
-                      mfrom=u'Foo Bar <foo@example.com>', subject=subject)
+        mailhost.send(msg, mto='"Name, Nick" <recipient@example.com>',
+                      mfrom='Foo Bar <foo@example.com>', subject=subject)
         out = mailhost.sent
         # Ensure the results are not unicode
         inmsg = b"""\
@@ -453,8 +395,7 @@ From: Foo Bar <foo@example.com>
 
 Here's some unencoded <strong>text</strong>."""
 
-        if six.PY3:
-            inmsg = inmsg.replace(b"\n", b"\r\n")
+        inmsg = inmsg.replace(b"\n", b"\r\n")
 
         self.assertEqual(out, inmsg)
         self.assertEqual(type(out), bytes)
@@ -474,14 +415,14 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
 """)
         mailhost = self._makeOne('MailHost')
         mailhost.send(msg)
-        out = parse_message(mailhost.sent)
+        out = message_from_bytes(mailhost.sent)
         self.assertEqual(out.as_string(), msg.as_string())
 
         # we can even alter a from and subject headers without affecting the
         # original object
         mailhost.send(msg,
                       mfrom='Foo Bar <foo@example.com>', subject='Changed!')
-        out = parse_message(mailhost.sent)
+        out = message_from_bytes(mailhost.sent)
 
         # We need to make sure we didn't mutate the message we were passed
         self.assertNotEqual(out.as_string(), msg.as_string())
@@ -536,11 +477,8 @@ wqFVbiB0cnVjbyA8c3Ryb25nPmZhbnTDoXN0aWNvPC9zdHJvbmc+IQ=3D=3D
             b'This is the message body.\n'
             b'--===============8011890429167670482==--\n'
             % date_pattern)
-        if six.PY2:
-            self.assertRegexpMatches(mailhost.sent, pattern)
-        else:  # PY3
-            pattern = pattern.replace(b"\n", b"\r\n")
-            self.assertRegex(mailhost.sent, pattern)
+        pattern = pattern.replace(b"\n", b"\r\n")
+        self.assertRegex(mailhost.sent, pattern)
 
     def testExplicitBase64Encoding(self):
         mailhost = self._makeOne('MailHost')
@@ -559,8 +497,7 @@ Mime-Version: 1.0
 
 QSBNZXNzYWdl"""
 
-        if six.PY3:
-            outmsg = outmsg.replace(b"\n", b"\r\n")
+        outmsg = outmsg.replace(b"\n", b"\r\n")
 
         self.assertEqual(mailhost.sent.strip(), outmsg)
 
@@ -580,12 +517,10 @@ Mime-Version: 1.0
 
 A Message"""
 
-        if six.PY3:
-            outmsg = outmsg.replace(b"\n", b"\r\n")
+        outmsg = outmsg.replace(b"\n", b"\r\n")
 
         self.assertEqual(mailhost.sent, outmsg)
 
-    @unittest.skipUnless(PY36, 'requires Python 3.6+')
     def testExplicit8bitEncoding(self):
         mailhost = self._makeOne('MailHost')
         # We pass an encoded string with unspecified charset, it should be
@@ -595,8 +530,7 @@ A Message"""
                       mfrom='sender@example.com',
                       mto='Foo Bar <foo@example.com>', encode='8bit')
         msg = mailhost.sent
-        if six.PY3:
-            msg = msg.decode()
+        msg = msg.decode()
         self.assertEqual(msg, """\
 Date: Sun, 27 Aug 2006 17:00:00 +0200
 Subject: [No Subject]
@@ -662,14 +596,10 @@ Content-Transfer-Encoding: quoted-printable
         mailhost.send(msg, charset='utf-8')
         # There is a one newline difference in the output between
         # zope.sendmail versions.
-        if six.PY3:
-            msg = msg.encode().replace(b"\n", b"\r\n")
+        msg = msg.encode().replace(b"\n", b"\r\n")
         self.assertEqual(mailhost.sent[:677], msg[:677])
 
-        if six.PY2:
-            self.assertTrue(mailhost.sent.endswith(b'==0490954888==--\n'))
-        else:  # PY3
-            self.assertTrue(mailhost.sent.endswith(b'==0490954888==--\r\n'))
+        self.assertTrue(mailhost.sent.endswith(b'==0490954888==--\r\n'))
 
     def testSendMultiPartMixedMessage(self):
         msg = ("""\
@@ -724,8 +654,7 @@ D=EDt =EFs =E9=E9n test
         # effects in the case of multipart mails.
         # (TypeError: expected string or buffer)
         mailhost.send(msg, charset='utf-8')
-        if six.PY3:
-            msg = msg.encode().replace(b"\n", b"\r\n")
+        msg = msg.encode().replace(b"\n", b"\r\n")
         self.assertEqual(mailhost.sent, msg)
 
     def test_manage_makeChanges(self):
@@ -780,7 +709,7 @@ class TestMailHostQueuing(unittest.TestCase):
         return mh
 
     def tearDown(self):
-        super(TestMailHostQueuing, self).tearDown()
+        super().tearDown()
         shutil.rmtree(self.tmpdir, ignore_errors=True)
 
     def testStartQueueProcessorThread(self):
@@ -789,10 +718,9 @@ class TestMailHostQueuing(unittest.TestCase):
         md = zope.sendmail.maildir.Maildir(self.smtp_queue_directory)
         self.assertEqual(len(list(md)), 1)
 
-    @unittest.skipUnless(PY36, 'requires Python 3.6+')
     def test_8bit_special(self):
         mh = self._makeOne('MailHost')
-        mh.send(u"""\
+        mh.send("""\
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit

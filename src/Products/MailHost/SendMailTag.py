@@ -19,7 +19,7 @@ from Products.MailHost.MailHost import MailBase
 from Products.MailHost.MailHost import MailHostError
 
 
-class SendMailTag(object):
+class SendMailTag:
     """the send mail tag, used like thus:
 
     <dtml-sendmail mailhost="someMailHostID">

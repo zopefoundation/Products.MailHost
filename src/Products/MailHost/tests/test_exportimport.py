@@ -124,8 +124,9 @@ class MailHostXMLAdapterTestsWithNoneValue(MailHostXMLAdapterTests):
 
 
 def test_suite():
+    loader = unittest.defaultTestLoader
     return unittest.TestSuite((
-        unittest.makeSuite(MailHostXMLAdapterTests),
-        unittest.makeSuite(MailHostXMLAdapterTestsWithoutQueue),
-        unittest.makeSuite(MailHostXMLAdapterTestsWithQueue),
-        unittest.makeSuite(MailHostXMLAdapterTestsWithNoneValue)))
+        loader.loadTestsFromTestCase(MailHostXMLAdapterTests),
+        loader.loadTestsFromTestCase(MailHostXMLAdapterTestsWithoutQueue),
+        loader.loadTestsFromTestCase(MailHostXMLAdapterTestsWithQueue),
+        loader.loadTestsFromTestCase(MailHostXMLAdapterTestsWithNoneValue)))
