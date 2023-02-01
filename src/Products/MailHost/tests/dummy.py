@@ -27,7 +27,7 @@ class DummyMailHost(MailHost):
         self.immediate = immediate
 
 
-class FakeContent(object):
+class FakeContent:
 
     def __init__(self, template_name, message):
 

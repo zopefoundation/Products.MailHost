@@ -64,7 +64,6 @@ class SendMailTagTests(unittest.TestCase):
         self.assertEqual(tag.port, 1025)
 
     def test_dtml_var(self):
-        import six
         addDTMLMethod(self.app, 'testing',
                       file=('<dtml-sendmail mailhost="MailHost">'
                             'To: person@their.machine.com\n'
@@ -83,7 +82,6 @@ class SendMailTagTests(unittest.TestCase):
                  b'\n'
                  b'boy howdy!\n')
 
-        if six.PY3:
-            inmsg = inmsg.replace(b"\n", b"\r\n")
+        inmsg = inmsg.replace(b"\n", b"\r\n")
 
         self.assertEqual(outmsg, inmsg)

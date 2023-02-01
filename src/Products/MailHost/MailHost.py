@@ -16,19 +16,24 @@ import logging
 import os
 import re
 import time
+from copy import copy
 from copy import deepcopy
 from email import encoders
 from email import message_from_string
+from email import policy
+from email._policybase import Compat32
 from email.charset import Charset
+from email.generator import BytesGenerator
+from email.generator import _has_surrogates
 from email.header import Header
 from email.message import Message
 from email.utils import formataddr
 from email.utils import getaddresses
 from email.utils import parseaddr
+from functools import partial
+from io import BytesIO
 from os.path import realpath
 from threading import Lock
-
-import six
 
 from AccessControl.class_init import InitializeClass
 from AccessControl.Permissions import change_configuration
@@ -222,9 +227,7 @@ class MailBase(Implicit, Item, RoleManager):
 
     @security.protected(use_mailhost_services)
     def simple_send(self, mto, mfrom, subject, body, immediate=False):
-        body = 'From: %s\nTo: %s\nSubject: %s\n\n%s' % (
-            mfrom, mto, subject, body)
-
+        body = f'From: {mfrom}\nTo: {mto}\nSubject: {subject}\n\n{body}'
         self._send(mfrom, mto, body, immediate)
 
     def _makeMailer(self):
@@ -355,11 +358,7 @@ ENCODERS = {
 
 def _string_transform(text, charset=None):
     """converts *text* to a native string."""
-    if six.PY2 and isinstance(text, six.text_type):
-        # Unicode under Python 2
-        return _try_encode(text, charset)
-
-    if six.PY3 and isinstance(text, bytes):
+    if isinstance(text, bytes):
         # Already-encoded byte strings which the email module does not like
         return text.decode(charset)
 
@@ -408,7 +407,7 @@ def _mungeHeaders(messageText, mto=None, mfrom=None, subject=None,
         mo['Subject'] = '[No Subject]'
 
     if mto:
-        if isinstance(mto, six.string_types):
+        if isinstance(mto, str):
             mto = [formataddr(addr) for addr in getaddresses((mto, ))]
         # this violates what is said above (parameters always override)
         # if not mo.get('To'):
@@ -510,7 +509,7 @@ def _encode_address_string(text, charset):
     parts should be encoded appropriately."""
     header = Header()
     name, addr = parseaddr(text)
-    if isinstance(name, six.binary_type):
+    if isinstance(name, bytes):
         try:
             name.decode('us-ascii')
         except UnicodeDecodeError:
@@ -522,50 +521,43 @@ def _encode_address_string(text, charset):
     return header
 
 
-if six.PY2:
-    def as_bytes(msg):
-        return msg.as_string()
-else:  # Python 3
-    def as_bytes(msg):
-        return msg.as_bytes()
+def as_bytes(msg):
+    return msg.as_bytes()
 
-    # work around "https://bugs.python.org/issue41307"
-    from copy import copy
-    from email import policy
-    from email._policybase import Compat32
-    from email.generator import BytesGenerator
-    from email.generator import _has_surrogates
-    from functools import partial
-    from io import BytesIO
 
-    class FixedBytesGenerator(BytesGenerator):
-        def _handle_text(self, msg):
-            payload = msg._payload
-            if payload is None:
-                return
-            charset = msg.get_param('charset', 'utf-8')
-            if (charset is not None
-                    and not self.policy.cte_type == '7bit'
-                    and not _has_surrogates(payload)):
-                msg = copy(msg)
-                msg._payload = payload.encode(charset).decode(
-                    'ascii', 'surrogateescape')
-            super()._handle_text(msg)
+# work around https://github.com/python/cpython/issues/85479
 
-        _writeBody = _handle_text
 
-    class FixedMessage(Message):
-        def as_bytes(self, unixfrom=False, policy=None):
-            policy = self.policy if policy is None else policy
-            fp = BytesIO()
-            g = FixedBytesGenerator(fp, mangle_from_=False, policy=policy)
-            g.flatten(self, unixfrom=unixfrom)
-            return fp.getvalue()
+class FixedBytesGenerator(BytesGenerator):
+    def _handle_text(self, msg):
+        payload = msg._payload
+        if payload is None:
+            return
+        charset = msg.get_param('charset', 'utf-8')
+        if (charset is not None
+                and not self.policy.cte_type == '7bit'
+                and not _has_surrogates(payload)):
+            msg = copy(msg)
+            msg._payload = payload.encode(charset).decode(
+                'ascii', 'surrogateescape')
+        super()._handle_text(msg)
 
-    if hasattr(Compat32, 'message_factory'):
-        fixed_policy = policy.compat32.clone(
-            linesep='\r\n', message_factory=FixedMessage)
-    else:
-        fixed_policy = policy.compat32.clone(linesep='\r\n')
+    _writeBody = _handle_text
 
-    message_from_string = partial(message_from_string, policy=fixed_policy)
+
+class FixedMessage(Message):
+    def as_bytes(self, unixfrom=False, policy=None):
+        policy = self.policy if policy is None else policy
+        fp = BytesIO()
+        g = FixedBytesGenerator(fp, mangle_from_=False, policy=policy)
+        g.flatten(self, unixfrom=unixfrom)
+        return fp.getvalue()
+
+
+if hasattr(Compat32, 'message_factory'):
+    fixed_policy = policy.compat32.clone(
+        linesep='\r\n', message_factory=FixedMessage)
+else:
+    fixed_policy = policy.compat32.clone(linesep='\r\n')
+
+message_from_string = partial(message_from_string, policy=fixed_policy)
