@@ -525,6 +525,9 @@ def as_bytes(msg):
     return msg.as_bytes()
 
 
+# work around https://github.com/python/cpython/issues/85479
+
+
 class FixedBytesGenerator(BytesGenerator):
     def _handle_text(self, msg):
         payload = msg._payload
