@@ -4,6 +4,8 @@ Changelog
 5.1 (unreleased)
 ----------------
 
+- Add support for Python 3.12.
+
 
 5.0 (2023-02-01)
 ----------------
