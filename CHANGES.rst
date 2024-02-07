@@ -4,6 +4,8 @@ Changelog
 5.1 (unreleased)
 ----------------
 
+- Remove doc string from the MailHost ``send`` method to prevent publishing.
+
 - Add support for Python 3.12.
 
 

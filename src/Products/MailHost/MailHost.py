@@ -209,11 +209,8 @@ class MailBase(Implicit, Item, RoleManager):
              immediate=False,
              charset=None,
              msg_type=None):
-        """send *messageText* modified by the other parameters.
-
-        *messageText* can either be an ``email.message.Message``
-        or a string.
-        """
+        # send *messageText* modified by the other parameters.
+        # *messageText* can be an ``email.message.Message`` or a string.
         msg, mto, mfrom = _mungeHeaders(messageText, mto, mfrom,
                                         subject, charset, msg_type,
                                         encode)
