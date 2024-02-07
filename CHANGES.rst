@@ -1,7 +1,7 @@
 Changelog
 =========
 
-5.1 (unreleased)
+5.1 (2024-02-07)
 ----------------
 
 - Remove doc string from the MailHost ``send`` method to prevent publishing.
