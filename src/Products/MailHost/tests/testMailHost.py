@@ -14,6 +14,7 @@
 """
 
 import os.path
+import re
 import shutil
 import tempfile
 import unittest
@@ -208,11 +209,11 @@ This is the message body."""
         self.assertEqual(mailhost.sent, outmsg)
 
     def testSimpleSend(self):
-        outmsg = """\
-From: sender@example.com
-To: "Name, Nick" <recipient@example.com>, "Foo Bar" <foo@example.com>
-Subject: This is the subject
-
+        outmsg = b"""\
+From: sender@example.com\r
+To: "Name, Nick" <recipient@example.com>, "Foo Bar" <foo@example.com>\r
+Subject: This is the subject\r
+\r
 This is the message body."""
 
         mailhost = self._makeOne('MailHost')
@@ -221,15 +222,15 @@ This is the message body."""
                              mfrom='sender@example.com',
                              subject='This is the subject',
                              body='This is the message body.')
-        self.assertEqual(mailhost.sent, outmsg)
+        self.assertEqual(_rm_date(mailhost.sent), outmsg)
         self.assertEqual(mailhost.immediate, False)
 
     def testSendImmediate(self):
-        outmsg = """\
-From: sender@example.com
-To: "Name, Nick" <recipient@example.com>, "Foo Bar" <foo@example.com>
-Subject: This is the subject
-
+        outmsg = b"""\
+From: sender@example.com\r
+To: "Name, Nick" <recipient@example.com>, "Foo Bar" <foo@example.com>\r
+Subject: This is the subject\r
+\r
 This is the message body."""
 
         mailhost = self._makeOne('MailHost')
@@ -239,7 +240,7 @@ This is the message body."""
                              subject='This is the subject',
                              body='This is the message body.',
                              immediate=True)
-        self.assertEqual(mailhost.sent, outmsg)
+        self.assertEqual(_rm_date(mailhost.sent), outmsg)
         self.assertEqual(mailhost.immediate, True)
 
     def testSendBodyWithUrl(self):
@@ -745,3 +746,11 @@ Content-Transfer-Encoding: 8bit
         self.assertFalse(mh.started_queue_processor_thread)
         md = zope.sendmail.maildir.Maildir(self.smtp_queue_directory)
         self.assertEqual(len(list(md)), 1)
+
+
+_date_hdr_re = re.compile(b"^Date:.*\r\n", re.I | re.M)
+
+
+def _rm_date(msg):
+    """remove a ``Date`` header from *msg* (bytes)."""
+    return _date_hdr_re.sub(b"", msg)

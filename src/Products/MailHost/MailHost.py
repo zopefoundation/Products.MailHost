@@ -183,8 +183,8 @@ class MailBase(Implicit, Item, RoleManager):
                      immediate=False,
                      charset=None,
                      msg_type=None):
-        """Render a mail template, then send it...
-        """
+        # Render a mail template, then send it...
+        #
         mtemplate = getattr(self, messageTemplate)
         messageText = mtemplate(self, trueself.REQUEST)
         trueself.send(messageText, mto=mto, mfrom=mfrom,
@@ -224,8 +224,8 @@ class MailBase(Implicit, Item, RoleManager):
 
     @security.protected(use_mailhost_services)
     def simple_send(self, mto, mfrom, subject, body, immediate=False):
-        body = f'From: {mfrom}\nTo: {mto}\nSubject: {subject}\n\n{body}'
-        self._send(mfrom, mto, body, immediate)
+        msg = f'From: {mfrom}\nTo: {mto}\nSubject: {subject}\n\n{body}'
+        self.send(msg, immediate=immediate)
 
     def _makeMailer(self):
         """ Create a SMTPMailer """

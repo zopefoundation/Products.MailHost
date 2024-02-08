@@ -4,6 +4,12 @@ Changelog
 5.2 (unreleased)
 ----------------
 
+- Use SMTP compatible line separators in generated messages.
+
+- Remove doc string from the MailHost ``sendTemplate`` method
+  to prevent publishing.
+
+
 
 5.1 (2024-02-07)
 ----------------
