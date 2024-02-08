@@ -1,7 +1,7 @@
 Changelog
 =========
 
-5.2 (unreleased)
+5.2 (2024-02-08)
 ----------------
 
 - Use SMTP compatible line separators in generated messages.
