@@ -108,6 +108,7 @@ class MailBase(Implicit, Item, RoleManager):
     smtp_queue = False
     smtp_queue_directory = '/tmp'
     force_tls = False
+    implicit_tls = False
     lock = Lock()
 
     manage_options = ((
@@ -120,6 +121,7 @@ class MailBase(Implicit, Item, RoleManager):
                  smtp_host='localhost',
                  smtp_port=25,
                  force_tls=False,
+                 implicit_tls=False,
                  smtp_uid='',
                  smtp_pwd='',
                  smtp_queue=False,
@@ -133,6 +135,7 @@ class MailBase(Implicit, Item, RoleManager):
         self.smtp_uid = smtp_uid
         self.smtp_pwd = smtp_pwd
         self.force_tls = force_tls
+        self.implicit_tls = implicit_tls
         self.smtp_queue = smtp_queue
         self.smtp_queue_directory = smtp_queue_directory
 
@@ -151,6 +154,7 @@ class MailBase(Implicit, Item, RoleManager):
                            smtp_queue=False,
                            smtp_queue_directory='/tmp',
                            force_tls=False,
+                           implicit_tls=False,
                            REQUEST=None):
         """Make the changes.
         """
@@ -164,6 +168,7 @@ class MailBase(Implicit, Item, RoleManager):
         self.smtp_uid = smtp_uid
         self.smtp_pwd = smtp_pwd
         self.force_tls = force_tls
+        self.implicit_tls = implicit_tls
         self.smtp_queue = smtp_queue
         self.smtp_queue_directory = smtp_queue_directory
 
@@ -233,7 +238,8 @@ class MailBase(Implicit, Item, RoleManager):
                           port=int(self.smtp_port),
                           username=self.smtp_uid or None,
                           password=self.smtp_pwd or None,
-                          force_tls=self.force_tls)
+                          force_tls=self.force_tls,
+                          implicit_tls=self.implicit_tls)
 
     @security.private
     def _getThreadKey(self):
