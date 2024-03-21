@@ -89,7 +89,7 @@
         <small>
           Use TLS from the beginning of the connection,
           known as SMTPS and commonly used on TCP port 465.
-          force_tls and no_tls are ignored if this is set.
+          force_tls is ignored if this is set.
         </small>
       </div>
     </div>
