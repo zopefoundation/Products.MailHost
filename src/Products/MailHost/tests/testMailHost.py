@@ -16,6 +16,7 @@
 import os.path
 import re
 import shutil
+import smtplib
 import tempfile
 import unittest
 from email import message_from_bytes
@@ -665,10 +666,41 @@ D=EDt =EFs =E9=E9n test
             title='MailHost',
             smtp_host='localhost',
             smtp_port='25',
+            implicit_tls=True,
         )
         self.assertEqual(mailhost.title, 'MailHost')
         self.assertEqual(mailhost.smtp_host, 'localhost')
         self.assertEqual(mailhost.smtp_port, 25)
+        self.assertEqual(mailhost.implicit_tls, True)
+
+    def test_createDefaultMailer(self):
+        mailhost = MailHost()
+
+        mailer = mailhost._makeMailer()
+        self.assertEqual(mailer.hostname, 'localhost')
+        self.assertEqual(mailer.port, 25)
+        self.assertEqual(mailer.force_tls, False
+        self.assertEqual(mailer.no_tls, False)
+        self.assertEqual(mailer.implicit_tls, False)
+        self.assertEqual(mailer.smtp, smtplib.SMTP)
+
+        # switch to implicit_tls
+        mailhost.manage_makeChanges(
+            title='MailHostSSL',
+            smtp_host='localhost',
+            smtp_port='465',
+            implicit_tls=True,
+        )
+        mailer = mailhost._makeMailer()
+        self.assertEqual(mailer.port, 465)
+        self.assertEqual(mailer.smtp, smtplib.SMTP_SSL)
+
+    def test_createSMPTSMailer(self):
+        # create a mailer with implicit_tls
+        mailhost = MailHost(implicit_tls=True)
+        mailer = mailhost._makeMailer()
+        self.assertEqual(mailer.implicit_tls, True)
+        self.assertEqual(mailer.smtp, smtplib.SMTP_SSL)
 
 
 class QueueingDummyMailHost(MailHost):
