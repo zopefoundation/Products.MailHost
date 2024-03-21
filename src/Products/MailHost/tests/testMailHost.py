@@ -679,7 +679,7 @@ D=EDt =EFs =E9=E9n test
         mailer = mailhost._makeMailer()
         self.assertEqual(mailer.hostname, 'localhost')
         self.assertEqual(mailer.port, 25)
-        self.assertEqual(mailer.force_tls, False
+        self.assertEqual(mailer.force_tls, False)
         self.assertEqual(mailer.no_tls, False)
         self.assertEqual(mailer.implicit_tls, False)
         self.assertEqual(mailer.smtp, smtplib.SMTP)
