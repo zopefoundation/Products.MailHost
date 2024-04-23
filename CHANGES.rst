@@ -4,6 +4,11 @@ Changelog
 5.3 (unreleased)
 ----------------
 
+- Add support to `implicit_tls` flag. With this flag set,
+  MailHost use TLS from the beginning of the connection,
+  known as SMTPS and commonly used on TCP port 465.
+  Requires zope.sendmail >= 6.2
+
 
 5.2 (2024-02-08)
 ----------------
