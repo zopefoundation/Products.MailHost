@@ -1,7 +1,7 @@
 Changelog
 =========
 
-5.3 (unreleased)
+6.0 (unreleased)
 ----------------
 
 - Add support to `implicit_tls` flag. With this flag set,
