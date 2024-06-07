@@ -20,10 +20,15 @@ try:
     from Products.GenericSetup.testing import BodyAdapterTestCase
     from Products.GenericSetup.testing import ExportImportZCMLLayer
     HAVE_GS = True
-except ImportError:
+except ModuleNotFoundError:
     HAVE_GS = False
-    class BodyAdapterTestCase: pass  # noqa
-    class ExportImportZCMLLayer: pass  # noqa
+
+    class BodyAdapterTestCase:
+        pass  # noqa
+
+    class ExportImportZCMLLayer:
+        pass  # noqa
+
 
 _MAILHOST_BODY = b"""\
 <?xml version="1.0" encoding="utf-8"?>
@@ -125,8 +130,8 @@ class MailHostXMLAdapterTestsWithNoneValue(MailHostXMLAdapterTests):
 
 def test_suite():
     loader = unittest.defaultTestLoader
-    return unittest.TestSuite((
-        loader.loadTestsFromTestCase(MailHostXMLAdapterTests),
-        loader.loadTestsFromTestCase(MailHostXMLAdapterTestsWithoutQueue),
-        loader.loadTestsFromTestCase(MailHostXMLAdapterTestsWithQueue),
-        loader.loadTestsFromTestCase(MailHostXMLAdapterTestsWithNoneValue)))
+    return unittest.TestSuite(
+        (loader.loadTestsFromTestCase(MailHostXMLAdapterTests),
+         loader.loadTestsFromTestCase(MailHostXMLAdapterTestsWithoutQueue),
+         loader.loadTestsFromTestCase(MailHostXMLAdapterTestsWithQueue),
+         loader.loadTestsFromTestCase(MailHostXMLAdapterTestsWithNoneValue)))
