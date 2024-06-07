@@ -1,8 +1,10 @@
 Changelog
 =========
 
-5.3 (unreleased)
+6.0 (unreleased)
 ----------------
+
+- Drop support for Python 3.7.
 
 - Add support to `implicit_tls` flag. With this flag set,
   MailHost use TLS from the beginning of the connection,
