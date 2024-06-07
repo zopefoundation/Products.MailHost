@@ -4,6 +4,8 @@ Changelog
 6.0 (unreleased)
 ----------------
 
+- Drop support for Python 3.7.
+
 - Add support to `implicit_tls` flag. With this flag set,
   MailHost use TLS from the beginning of the connection,
   known as SMTPS and commonly used on TCP port 465.
