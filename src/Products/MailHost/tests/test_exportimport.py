@@ -74,8 +74,8 @@ class MailHostXMLAdapterTests(BodyAdapterTestCase, unittest.TestCase):
 class MailHostXMLAdapterTestsWithoutQueue(MailHostXMLAdapterTests):
 
     def _verifyImport(self, obj):
-        self.assertFalse('smtp_queue' in obj.__dict__)
-        self.assertFalse('smtp_queue_directory' in obj.__dict__)
+        self.assertNotIn('smtp_queue', obj.__dict__)
+        self.assertNotIn('smtp_queue_directory', obj.__dict__)
 
     def setUp(self):
         from Products.MailHost.MailHost import MailHost
