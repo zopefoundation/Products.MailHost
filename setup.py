@@ -67,4 +67,5 @@ setup(
     extras_require={
         'genericsetup': ['Products.GenericSetup >= 2.0b1'],
     },
+    include_package_data=True,
 )
