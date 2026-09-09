@@ -79,11 +79,11 @@ def manage_addMailHost(self,
                        smtp_host='localhost',
                        localhost='localhost',
                        smtp_port=25,
-                       timeout=1.0,
+                       timeout=None,
                        REQUEST=None):
     """ Add a MailHost into the system.
     """
-    i = MailHost(id, title, smtp_host, smtp_port)
+    i = MailHost(id, title, smtp_host, smtp_port, timeout=timeout)
     self._setObject(id, i)
 
     if REQUEST is not None:
@@ -109,6 +109,7 @@ class MailBase(Implicit, Item, RoleManager):
     smtp_queue_directory = '/tmp'
     force_tls = False
     implicit_tls = False
+    timeout = None
     lock = Lock()
 
     manage_options = ((
@@ -125,7 +126,8 @@ class MailBase(Implicit, Item, RoleManager):
                  smtp_uid='',
                  smtp_pwd='',
                  smtp_queue=False,
-                 smtp_queue_directory='/tmp'):
+                 smtp_queue_directory='/tmp',
+                 timeout=None):
         """Initialize a new MailHost instance.
         """
         self.id = id
@@ -138,6 +140,7 @@ class MailBase(Implicit, Item, RoleManager):
         self.implicit_tls = implicit_tls
         self.smtp_queue = smtp_queue
         self.smtp_queue_directory = smtp_queue_directory
+        self.timeout = float(timeout) if timeout else None
 
     def _init(self, smtp_host, smtp_port):
         # staying for now... (backwards compatibility)
@@ -155,6 +158,7 @@ class MailBase(Implicit, Item, RoleManager):
                            smtp_queue_directory='/tmp',
                            force_tls=False,
                            implicit_tls=False,
+                           timeout=None,
                            REQUEST=None):
         """Make the changes.
         """
@@ -171,6 +175,7 @@ class MailBase(Implicit, Item, RoleManager):
         self.implicit_tls = implicit_tls
         self.smtp_queue = smtp_queue
         self.smtp_queue_directory = smtp_queue_directory
+        self.timeout = float(timeout) if timeout else None
 
         if REQUEST is not None:
             msg = 'MailHost %s updated' % self.id
@@ -239,7 +244,8 @@ class MailBase(Implicit, Item, RoleManager):
                           username=self.smtp_uid or None,
                           password=self.smtp_pwd or None,
                           force_tls=self.force_tls,
-                          implicit_tls=self.implicit_tls)
+                          implicit_tls=self.implicit_tls,
+                          timeout=self.timeout)
 
     @security.private
     def _getThreadKey(self):
