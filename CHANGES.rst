@@ -4,6 +4,13 @@ Changelog
 6.2 (unreleased)
 ----------------
 
+- Add a ``timeout`` setting to ``MailHost`` to control the socket
+  timeout used when connecting and talking to the SMTP server,
+  mirroring the ``timeout`` support added to ``zope.sendmail``'s
+  ``SMTPMailer``. Previously no timeout was passed to ``smtplib``,
+  so a connection could hang indefinitely if the server stopped
+  responding. Requires ``zope.sendmail >= 7.3``.
+
 - Move package metadata from setup.py to pyproject.toml.
 
 
