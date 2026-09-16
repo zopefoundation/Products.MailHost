@@ -712,8 +712,9 @@ D=EDt =EFs =E9=E9n test
 
     def test_default_timeout(self):
         mailhost = MailHost()
+        self.assertEqual(mailhost.timeout, 10.0)
         mailer = mailhost._makeMailer()
-        self.assertIsNone(mailer.timeout)
+        self.assertEqual(mailer.timeout, 10.0)
 
     def test_explicit_timeout(self):
         mailhost = MailHost(timeout=15)
@@ -734,7 +735,8 @@ D=EDt =EFs =E9=E9n test
         mailer = mailhost._makeMailer()
         self.assertEqual(mailer.timeout, 30.0)
 
-        # clearing the field goes back to the platform default
+        # clearing the field opts out of the timeout, falling back to
+        # the platform default socket behavior
         mailhost.manage_makeChanges(
             title='MailHost',
             smtp_host='localhost',

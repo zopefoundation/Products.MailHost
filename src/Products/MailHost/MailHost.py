@@ -79,7 +79,7 @@ def manage_addMailHost(self,
                        smtp_host='localhost',
                        localhost='localhost',
                        smtp_port=25,
-                       timeout=None,
+                       timeout=10,
                        REQUEST=None):
     """ Add a MailHost into the system.
     """
@@ -109,7 +109,7 @@ class MailBase(Implicit, Item, RoleManager):
     smtp_queue_directory = '/tmp'
     force_tls = False
     implicit_tls = False
-    timeout = None
+    timeout = 10
     lock = Lock()
 
     manage_options = ((
@@ -127,7 +127,7 @@ class MailBase(Implicit, Item, RoleManager):
                  smtp_pwd='',
                  smtp_queue=False,
                  smtp_queue_directory='/tmp',
-                 timeout=None):
+                 timeout=10):
         """Initialize a new MailHost instance.
         """
         self.id = id
@@ -158,7 +158,7 @@ class MailBase(Implicit, Item, RoleManager):
                            smtp_queue_directory='/tmp',
                            force_tls=False,
                            implicit_tls=False,
-                           timeout=None,
+                           timeout=10,
                            REQUEST=None):
         """Make the changes.
         """

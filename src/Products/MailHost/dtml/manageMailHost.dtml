@@ -103,7 +103,7 @@
                name="timeout" value="<dtml-if timeout>&dtml-timeout;</dtml-if>"/>
         <small>
           Timeout in seconds for the connection to the SMTP server.
-          Leave empty to use the platform default socket timeout.
+          Defaults to 10 seconds.
         </small>
       </div>
     </div>

@@ -11,6 +11,11 @@ Changelog
   so a connection could hang indefinitely if the server stopped
   responding. Requires ``zope.sendmail >= 7.3``.
 
+  ``MailHost`` now defaults to a 10 second timeout instead of
+  blocking indefinitely. This is a behavior change: pass
+  ``timeout=None`` explicitly to restore the previous unbounded
+  behavior.
+
 - Move package metadata from setup.py to pyproject.toml.
 
 
