@@ -47,7 +47,7 @@ dependencies = [
     "Zope >= 5",
     "zope.deferredimport",
     "zope.interface",
-    "zope.sendmail >= 6.2",
+    "zope.sendmail >= 7.3",
 ]
 
 [project.optional-dependencies]

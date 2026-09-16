@@ -710,6 +710,41 @@ D=EDt =EFs =E9=E9n test
         self.assertEqual(mailer.implicit_tls, True)
         self.assertEqual(mailer.smtp, smtplib.SMTP_SSL)
 
+    def test_default_timeout(self):
+        mailhost = MailHost()
+        self.assertEqual(mailhost.timeout, 10.0)
+        mailer = mailhost._makeMailer()
+        self.assertEqual(mailer.timeout, 10.0)
+
+    def test_explicit_timeout(self):
+        mailhost = MailHost(timeout=15)
+        self.assertEqual(mailhost.timeout, 15.0)
+        mailer = mailhost._makeMailer()
+        self.assertEqual(mailer.timeout, 15.0)
+
+    def test_manage_makeChanges_timeout(self):
+        mailhost = self._makeOne('MailHost')
+
+        mailhost.manage_makeChanges(
+            title='MailHost',
+            smtp_host='localhost',
+            smtp_port='25',
+            timeout='30',
+        )
+        self.assertEqual(mailhost.timeout, 30.0)
+        mailer = mailhost._makeMailer()
+        self.assertEqual(mailer.timeout, 30.0)
+
+        # clearing the field opts out of the timeout, falling back to
+        # the platform default socket behavior
+        mailhost.manage_makeChanges(
+            title='MailHost',
+            smtp_host='localhost',
+            smtp_port='25',
+            timeout='',
+        )
+        self.assertIsNone(mailhost.timeout)
+
 
 class QueueingDummyMailHost(MailHost):
     """Dummy mail host implementation which supports queueing."""
