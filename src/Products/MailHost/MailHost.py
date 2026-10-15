@@ -280,7 +280,7 @@ class MailBase(Implicit, Item, RoleManager):
 
         try:
             maildir = Maildir(self.smtp_queue_directory)
-            return len([item for item in maildir])
+            return len([*maildir])
         except ValueError:
             return 'n/a - %s is not a maildir - please verify your ' \
                    'configuration' % self.smtp_queue_directory

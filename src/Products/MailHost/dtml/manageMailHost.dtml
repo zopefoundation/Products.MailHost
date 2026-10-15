@@ -12,7 +12,7 @@
   </p>
 
   <form action="manage_makeChanges" method="post">
-  
+
     <div class="form-group row">
       <label for="title" class="form-label col-sm-3 col-md-2">Title</label>
       <div class="col-sm-9 col-md-10">
@@ -20,7 +20,7 @@
                value="&dtml-title;"/>
       </div>
     </div>
-  
+
     <div class="form-group row">
       <label for="smtp_host" class="form-label col-sm-3 col-md-2">
         SMTP host
@@ -30,7 +30,7 @@
                name="smtp_host" value="&dtml-smtp_host;"/>
       </div>
     </div>
-  
+
     <div class="form-group row">
       <label for="smtp_port" class="form-label col-sm-3 col-md-2">
         SMTP port
@@ -114,14 +114,14 @@
                name="smtp_queue_directory" value="&dtml-smtp_queue_directory;"/>
       </div>
     </div>
-  
+
     <div class="zmi-controls">
       <input class="btn btn-primary" type="submit" name="submit"
              value="Save Changes" />
     </div>
 
   </form>
-  
+
   <dtml-if smtp_queue>
 
     <hr />
@@ -175,7 +175,7 @@
                  value="Start queue processor" />
         </dtml-if>
       </div>
- 
+
     </form>
 
   </dtml-if>
